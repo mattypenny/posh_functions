@@ -4,14 +4,16 @@ function prompt {
 Sets the prompt
 
 .DESCRIPTION
-Sets the prompt to a default of the Git Shell prompt, without the folder name and with a dollar rather than a chevron
+Sets the prompt either:
+- the GitShell prompt, but with only the last element of the folder name or
+- the get-date
+...depending on whether I'm in the Git Shell or not
 
 Todo: show the time
 Todo: show the time of the last command
 
 .PARAMETER Folder
 Not yet implemented. Show the folder name in the prompt
-
 
 .INPUTS
 None. You cannot pipe objects to this function
@@ -22,7 +24,7 @@ None. You cannot pipe objects to this function
  
 
 .LINK
-Twiki list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
+https://github.com/mattypenny/posh_functions/blob/master/function-prompt.ps1
 
 
 #>
@@ -45,13 +47,13 @@ Twiki list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
   }
   catch
   {
-    get-date 
+    $PromptDate=get-date
+    write-host " $PromptDate" -nonewline
   }
   $global:LASTEXITCODE = $realLASTEXITCODE
   return " $ "
 
 }
-set-alias aliasname template
 
 
 <#
