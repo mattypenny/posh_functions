@@ -29,7 +29,6 @@ Then I'd like to get the following into Github, and then clone into a standard s
 
 - GitQuickRef.txt
 - GitFunctionsFolder
-- 
 
 (note: these aren't git functions, they're just functions which I'm storing in git)
 
