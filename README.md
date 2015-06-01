@@ -23,6 +23,8 @@ On each PC that I use, I want to have a .some_sort_of_env file which would be en
 - do any other generic stuff
 - set common aliases
 
+Or possibly make the .matt file all the specific stuff and have a .some_sort_of_generic_setup_file
+
 So stop using $RepositoryServer, unless just to save typing in .some_sort_of_env file.
 
 Then I'd like to get the following into Github, and then clone into a standard set of folders:
