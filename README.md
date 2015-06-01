@@ -8,7 +8,7 @@ Where I want to get to is as follows.
 
 On each PC that I use, I want to have a .some_sort_of_env file which would be environment specific. This will set up:
 
-- $PoshHome (all of the subsequent variables would probably refer to $PoshHome)
+- $PoshHome (all of the subsequent variables would probably refer to $PoshHome...and it would be C:\Users\<username>\Documents\WindowsPowerShell)
 - $GitFunctionsFolder
 - $UnGitFunctionsFolder
 - $WorkFolder
