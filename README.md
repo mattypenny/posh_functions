@@ -11,10 +11,14 @@ On each PC that I use, I want to have a .some_sort_of_env file which would be en
 - $PoshHome (all of the subsequent variables would probably refer to $PoshHome...and it would be C:\Users\<username>\Documents\WindowsPowerShell)
 - $GitFunctionsFolder
 - $UnGitFunctionsFolder
+- $GitSqlFolder (being C:\Users\<username>\Documents\SQL Server Management Studio\Projects\githubbed_sql)
+- $UnGitSqlFolder  (being C:\Users\<username>\Documents\SQL Server Management Studio\Projects\) Unigt
 - $WorkFolder
 - $FirstFolder
 - $ScriptsFolder
-- $QuickReferenceFile
+- $QuickReferenceFolder
+- $GitQuickReferenceFile
+- $UnGitQuickReferenceFile - ungit
 
 ...and then a .matt file which is generic and will be in github and will
 
