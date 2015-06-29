@@ -1,0 +1,79 @@
+function get-loggedonuser { 
+<#
+.SYNOPSIS
+  Gets users logged on to a PC or server
+
+.DESCRIPTION
+  Gets users logged on to a PC or server
+
+.PARAMETER $ComputerName
+  Can be a single PC or a list of PCs
+
+.INPUTS
+None. You cannot pipe objects to this function
+
+.EXAMPLE
+  get-loggedonuser PC11111
+
+.EXAMPLE
+  get-loggedonuser server1
+
+.LINK
+  https://github.com/mattypenny/posh_functions
+
+#>
+  [CmdletBinding()]	
+	Param( $ComputerName)
+
+  foreach ($C in $ComputerName)
+  {
+    Get-WmiObject Win32_LoggedOnUser -ComputerName $C
+  }
+}
+
+
+
+function show-loggedonuser { 
+<#
+.SYNOPSIS
+  Gets users logged on to a PC or server
+
+.DESCRIPTION
+  Gets users logged on to a PC or server
+
+.PARAMETER $ComputerName
+  Can be a single PC or a list of PCs
+
+.INPUTS
+None. You cannot pipe objects to this function
+
+.EXAMPLE
+  show-loggedonuser PC11111
+
+.EXAMPLE
+  show-loggedonuser server1
+
+.LINK
+  https://github.com/mattypenny/posh_functions
+
+#>
+  [CmdletBinding()]	
+	Param(  $Computername)
+
+  Get-LoggedOnUser $ComputerName | 
+    select pscomputername, antecedent | 
+    ? antecedent -notlike "*SYSTEM*" |
+    ? antecedent -notlike "*LOCAL SERVICE*" |
+    ? antecedent -notlike "*NETWORK SERVICE*" |
+    ? antecedent -notlike "*ANONYMOUS LOGON*" |
+    ft -AutoSize 
+}
+
+
+set-alias sloggedonuser show-loggedonuser
+set-alias gloggedonuser get-loggedonuser
+<#
+vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+#>
+
+
