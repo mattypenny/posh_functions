@@ -38,7 +38,7 @@ function get-pins
 
     
     
-    $uri = "https://api.pinboard.in/v1/posts/recent?count=10"
+    $uri = "https://api.pinboard.in/v1/posts/recent?count=100"
     
     $secpasswd = ConvertTo-SecureString $pass -AsPlainText -Force
     
@@ -74,6 +74,21 @@ function Show-PinsAsWebPage
     )
 
     $pins = get-pins -username $username -password $secpasswd
+    convert-pinstowebpage $pins, $TagList
+
+    
+
+}
+
+function Convert-PinsToWebPage
+{
+    [CmdletBinding()]
+    Param
+    (
+        $pins,
+        $taglist
+    )
+
     write-debug "$pins"
 
     foreach ($tag in $tagList)
@@ -93,11 +108,46 @@ function Show-PinsAsWebPage
         }
     }
 
-    # Todo: Need to output all pins which don't match any of the specified tags
+    write-output "<h3>Other</h3>"
 
+    foreach ($pin in $pins.posts.post)
+    {
 
+        $PinHasNoMatchingTags = $True
+
+        $Href = $Pin.href
+        $Description = $Pin.Description
+        $PinTag = $pin.tag 
+       
+        write-debug "$Href" 
+        write-debug "$Description" 
+        write-debug "$PinTag" 
+       
+        foreach ($tag in $tagList)
+        {
+            write-debug "$Tag"
+
+            # Todo: Need to allow for one tag incorporating another e.g. sql and sqlserver
+            [string]$TagString = $Tag
+      
+            if ( $PinTag -like "*$TagString*" )
+            {
+                $PinHasNoMatchingTags = $False
+            }
+
+        }
+
+        if ( $PinHasNoMatchingTags -eq $True )
+        {
+	    write-output "<a href=`"$href`">$Description</a>"
+        
+        }
+
+    }
 
 }
+
+
 <#
 $Posts = $xml.posts.post | ? tag -notlike "*powershell*" | ? tag -notlike "*sqlserver*" | ? tag -notlike "*gtd*"
 $Posts | ft @{Expression = {"<a href=`"" + $_.href + "`">" + $_.description + "</a> " + $_.Extended }}
