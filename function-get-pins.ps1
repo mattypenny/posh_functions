@@ -55,9 +55,14 @@ $xml.posts.post
 
 <#
 .Synopsis
-   This retrieves recent pins as a header-ed webpage, with the header being specified tags
+   This retrieves recent pins as webpage, with specfied tags as headers
 .DESCRIPTION
-   Long description
+   This function outputs the last week's Pinboard tags as html. 
+
+   It takes a list of Pinboard tags as a parameter. The Pins for each tag are listed nder an <h3> level header, then any remaining tags are listed under a heading of 'other'.
+
+   The Pinboard username and password can be supplied as a parameter, or for convenience, these can be set up in the Shell variables $PinUser and $PinPass.
+
 .EXAMPLE
    Example of how to use this cmdlet
 .EXAMPLE
@@ -105,6 +110,7 @@ function Convert-PinsToWebPage
                 $Href = $Pin.href
                 $Description = $Pin.Description
 		write-output "<a href=`"$href`">$Description</a>"
+		write-output "<br>"
         }
     }
 
@@ -117,6 +123,7 @@ function Convert-PinsToWebPage
 
         $Href = $Pin.href
         $Description = $Pin.Description
+        $Extended = $Pin.Extended
         $PinTag = $pin.tag 
        
         write-debug "$Href" 
@@ -140,7 +147,11 @@ function Convert-PinsToWebPage
         if ( $PinHasNoMatchingTags -eq $True )
         {
 	    write-output "<a href=`"$href`">$Description</a>"
-        
+            if ( $Extended -ne "" )
+            {
+	    	write-output "- $Extended"
+            }
+	    write-output "<br>"
         }
 
     }
