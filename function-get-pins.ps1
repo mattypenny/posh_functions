@@ -8,9 +8,11 @@
    Todo: tags parameter
 
 .PARAMETER Username
-   Pinboard user
+   Pinboard user. If the $PinUser variable has been defined, this will be used as a default
+
 .PARAMETER Password
-   Pinboard password
+   Pinboard password. If the $PinPass variable has been defined, this will be used as a default
+
 .PARAMETER Option
    Not yet implemented
    The Pinboard API retrieval option. One of:
@@ -18,6 +20,7 @@
       recent - most recent posts
       dates - a list of dates with the number of posts at each date
       all - all bookmarks in the user's account
+
 .PARAMETER Tags
    Not yet implemented
    Pinboard tags - up to 3
@@ -33,23 +36,33 @@ function get-pins
     Param
     (
         [string]$username = "$PinUser",
-        [string]$password = "$PinPass"
+        [string]$password = "$PinPass",
+        [string]$option = "recent",
+        [int]$count = 100
     )
 
     
     
-    $uri = "https://api.pinboard.in/v1/posts/recent?count=100"
+    if ( $option -eq "recent" )
+    {
+       $uri = "https://api.pinboard.in/v1/posts/recent?count=$count"
+    }
+    else
+    {
+       $uri = "https://api.pinboard.in/v1/posts/$option"
+    }
+       
+    write-verbose "Uri: $uri"
     
     $secpasswd = ConvertTo-SecureString $pass -AsPlainText -Force
     
     $cred = New-Object System.Management.Automation.PSCredential ($user, $secpasswd)
     
-    [xml]$xml = Invoke-RestMethod -Uri $uri -Method Post -Credential $cred 
+    [xml]$PinsAsXml = Invoke-RestMethod -Uri $uri -Method Post -Credential $cred 
 
-<#
-$xml.posts.post
-#>
-    $xml
+    $PinsAsObject = $xml.posts.post
+    
+    return $PinsAsObject
 }
 
 
@@ -100,10 +113,10 @@ function Convert-PinsToWebPage
     {
         write-debug "$Tag"
 
-        # Todo: Need to allow for one tag incorporating another e.g. sql and sqlserver
+        # Todo: Need to allow for one tag incorporating another e.g. 'sql' and 'sqlserver'
         [string]$TagString = $Tag
         write-output "<h3>$TagString</h3>"
-        $PinsWithMatchingTag = $pins.posts.post | ? tag -like "*$TagString*"
+        $PinsWithMatchingTag = $pins | ? tag -like "*$TagString*"
 
 	foreach ($Pin in $PinsWithMAtchingTag)
         {
@@ -116,7 +129,7 @@ function Convert-PinsToWebPage
 
     write-output "<h3>Other</h3>"
 
-    foreach ($pin in $pins.posts.post)
+    foreach ($pin in $pins)
     {
 
         $PinHasNoMatchingTags = $True
