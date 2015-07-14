@@ -41,7 +41,9 @@ function get-pins
     [string]$option = "recent",
     [int]$count = 100
   )
-
+  write-verbose "Starting function get-pins"
+  write-debug "Parameters: `$username $username `$password $password 
+                           `$option $option `$count $count"
     
     
   if ( $option -eq "recent" )
@@ -53,35 +55,32 @@ function get-pins
     $uri = "https://api.pinboard.in/v1/posts/$option"
   }
        
-  write-verbose "Uri: $uri"
+  write-verbose "Getting bookmarks from Uri: $uri"
     
   $secpasswd = ConvertTo-SecureString $pass -AsPlainText -Force
-    
   $cred = New-Object System.Management.Automation.PSCredential ($user, $secpasswd)
     
   try
   {
 
-    write-verbose "getting bookmarks with...."
-    write-verbose "Invoke-RestMethod -Uri $uri -Credential $cred -timeout 300 -outfile c:\temp\pins.xml"
+    write-verbose "Running Invoke-RestMethod -Uri $uri -Credential $cred -timeout 300 -outfile c:\temp\pins.xml"
 
     Invoke-RestMethod -Uri $uri -Credential $cred -timeout 300 -outfile c:\temp\pins.xml
+    write-debug $(dir C:\temp\pins.xml | select fullname, length, lastwritetime)
 
-    $PinsAsXml = gc c:\temp\pins.xml
-    write-verbose $($PinsAsXml | measure-object).count
     
   }
   catch 
   {
-    Write-Host $_ -fore red
-    Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
-    Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
+    Write-output "It's all gone Pete Tong"
   }
+  write-verbose "Reading $TempXmlFile into an xml object"
+  [xml]$PinsAsXml = gc c:\temp\pins.xml
 
   write-verbose "Converting xml to Powershell object"
   $PinsAsObject = ""
-  $PinsAsObject = $xml.posts.post
-  # $PinsAsObject = Select-Xml -Content $xml -XPath "//href"
+  $PinsAsObject = $PinsAsXml.posts.post
+
   if ( $VerbosePreference -ne "SilentlyContinue" )
   {
     $NumberOfPins = $PinsAsObject | measure-object | select count
