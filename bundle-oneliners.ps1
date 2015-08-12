@@ -17,6 +17,7 @@ function lsltr {
 Does an equivalent of ls -ltr or dir /od
 #>
 Param ($DirName = "." ); dir $DirName | sort-object -property lastwritetime}
+
 function wcl {
 <#
 .SYNOPSIS

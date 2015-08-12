@@ -24,6 +24,12 @@
 .PARAMETER Tags
   Not yet implemented
   Pinboard tags - up to 3
+
+.PARAMETER Count
+  How many bookmarks to retrieve. Only used if the option is 'recent'
+
+.PARAMETER TempFile
+  File to retrieve the bookmarks into, then read them out of. Horrible kludge because I can't get reading directly into an XML variable to work.jjjjjjjjjjjjjjjjjj
   
 .EXAMPLE
    
@@ -39,7 +45,8 @@ function get-pins
     [string]$username = "$PinUser",
     [string]$password = "$PinPass",
     [string]$option = "recent",
-    [int]$count = 100
+    [int]$count = 100,
+    [string]$TempFile = "c:\temp\pins.xml"
   )
   write-verbose "Starting function get-pins"
   write-debug "Parameters: `$username $username `$password $password 
@@ -57,16 +64,16 @@ function get-pins
        
   write-verbose "Getting bookmarks from Uri: $uri"
     
-  $secpasswd = ConvertTo-SecureString $pass -AsPlainText -Force
-  $cred = New-Object System.Management.Automation.PSCredential ($user, $secpasswd)
+  $secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+  $cred = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
     
   try
   {
 
-    write-verbose "Running Invoke-RestMethod -Uri $uri -Credential $cred -timeout 300 -outfile c:\temp\pins.xml"
+    write-verbose "Running Invoke-RestMethod -Uri $uri -Credential $cred -timeout 300 -outfile $TempFile"
 
-    Invoke-RestMethod -Uri $uri -Credential $cred -timeout 300 -outfile c:\temp\pins.xml
-    write-debug $(dir C:\temp\pins.xml | select fullname, length, lastwritetime)
+    Invoke-RestMethod -Uri $uri -Credential $cred -timeout 300 -outfile $TempFile
+    write-debug $(dir $TempFile | select fullname, length, lastwritetime)
 
     
   }
@@ -75,7 +82,7 @@ function get-pins
     Write-output "It's all gone Pete Tong"
   }
   write-verbose "Reading $TempXmlFile into an xml object"
-  [xml]$PinsAsXml = gc c:\temp\pins.xml
+  [xml]$PinsAsXml = gc $TempFile
 
   write-verbose "Converting xml to Powershell object"
   $PinsAsObject = ""
@@ -119,8 +126,6 @@ function Show-PinsAsWebPage
 
   $pins = get-pins -username $username -password $secpasswd
   convert-pinstowebpage $pins, $TagList
-
-    
 
 }
 
@@ -169,6 +174,10 @@ function Convert-PinsToWebPage
     write-verbose "$Description" 
     write-verbose "$PinTag" 
        
+    write-debug "`$Extended: $Extended"
+    $Extended = convert-PlainTextToSafeText $Extended
+    write-debug "`$Extended: $Extended"
+
     foreach ($tag in $tagList)
     {
       write-verbose "$Tag"
@@ -197,6 +206,35 @@ function Convert-PinsToWebPage
 
 }
 
+<#
+.Synopsis
+   Convert text that has been saved to Pinboard to html-safe text
+.DESCRIPTION
+   Convert text that has been saved to Pinboard to html-safe text
+.EXAMPLE
+   Example of how to use this cmdlet
+.EXAMPLE
+   Another example of how to use this cmdlet
+#>
+function convert-PlainTextToSafeText
+{
+    [CmdletBinding()]
+    [OutputType([string])]
+    Param
+    (
+        # Param1 help description
+        [string]$PlainText,
+        [string]$Option = 'html'
+    )
+    
+    # replace greater than
+    $SafeText = $PlainText.Replace("<", "&lt;")
+
+    # replace less than
+    $SafeText = $SafeText.Replace(">", "&gt;")
+
+    return $SafeText
+}
 
 <#
 $Posts = $xml.posts.post | ? tag -notlike "*powershell*" | ? tag -notlike "*sqlserver*" | ? tag -notlike "*gtd*"
