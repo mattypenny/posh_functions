@@ -30,17 +30,17 @@ function show-os {
         },
       @{
           Name="Versh"; 
-          Width=30; 
-          Expression = { $_.caption.replace('Microsoft Windows ','Windows ').replace('Microsoft(R) Windows(R)','Windows ') } 
+          Width=42; 
+          Expression = { $_.caption.replace('Microsoft Windows','Windows').replace('Microsoft(R) Windows(R)','Windows') } 
         },
       @{
-          Label="SPMajor"; 
-          Width = 7;
+          Label="SPMaj"; 
+          Width = 5;
           Expression={$_.ServicePackMajorVersion}
-        },
+        }
       @{
-          Label="SPMinor"; 
-          Width = 7;
+          Label="SPMin"; 
+          Width = 5;
           Expression={$_.ServicePackMinorVersion}
         },
       @{
