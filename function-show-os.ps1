@@ -31,7 +31,7 @@ function show-os {
       @{
           Name="Versh"; 
           Width=30; 
-          Expression = { $_.caption.replace('Microsoft Windows ','') } 
+          Expression = { $_.caption.replace('Microsoft Windows ','Windows ').replace('Microsoft(R) Windows(R)','Windows ') } 
         },
       @{
           Label="SPMajor"; 
