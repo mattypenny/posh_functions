@@ -37,7 +37,7 @@ function show-os {
           Label="SPMaj"; 
           Width = 5;
           Expression={$_.ServicePackMajorVersion}
-        }
+        },
       @{
           Label="SPMin"; 
           Width = 5;
