@@ -9,7 +9,7 @@
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Get-RaWMp3Tags
+function Get-ExtendedFileProperties
             
 {
   [CmdletBinding()]
@@ -67,9 +67,9 @@ function Get-RaWMp3Tags
     $shellObject = New-Object -ComObject Shell.Application
   
   
-    $mp3Files = Get-ChildItem $folder -recurse 
+    $Files = Get-ChildItem $folder -recurse 
   
-    foreach( $file in $mp3Files ) 
+    foreach( $file in $Files ) 
     {
   
       write-verbose "Processing file $file"
@@ -77,7 +77,7 @@ function Get-RaWMp3Tags
       $directoryObject = $shellObject.NameSpace( $file.Directory.FullName )
   
       $fileObject = $directoryObject.ParseName( $file.Name )
-      $RawMP3Info = New-Object PSObject
+      $RawFileProperties = New-Object PSObject
   
       for( $index = 0 ; $index -lt 1000; ++$index ) 
       {
@@ -88,12 +88,19 @@ function Get-RaWMp3Tags
   
         if ($name -ne "")
         {
-          Add-Member -InputObject $RawMP3Info -MemberType NoteProperty -Name $name -value "$value"
+          Add-Member -InputObject $RawFileProperties -MemberType NoteProperty -Name $name.replace(" ","") -value "$value"
           write-debug "Adding Member -Name $name -value $value"
+
+          # todo: Check for unknown attributes (wull also check for atypical mp3 attributes). Logging both to some sort of error log
+          #
+          # if not in array
+          # then
+          #   write to errorlog file
+          #
         }
       }
 
-    return $RawMP3Info
+    return $RawFileProperties
   
     }
   
@@ -104,6 +111,8 @@ function Get-RaWMp3Tags
 }
  
 
+# todo: function to just extract the mp3 stuff
+#
  
 
 $X = Get-Rawmp3tags -folder "D:\music\Desm*" -verbose
