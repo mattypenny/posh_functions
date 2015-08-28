@@ -6,6 +6,10 @@
 #
 # ----------------------------------------------------------------------
 function show-cpu { 
+<#
+.SYNOPSIS
+  Show CPU usage over specified intervals
+#>
 Param ( [String] $MyServer = ".",
         [Int] $MyDelay = 0,
         [Int] $MyCount = 1)

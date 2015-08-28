@@ -1,10 +1,3 @@
-# ----------------------------------------------------------------------
-# Function: aliasname - salias
-#
-#
-#           The list will probably need to be added to for version 3.0,
-#           come the glorious day that I move off of XP
-# ----------------------------------------------------------------------
 function show-alias { 
 <#
 .SYNOPSIS

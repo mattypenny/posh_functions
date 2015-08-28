@@ -37,10 +37,18 @@ Show the functions in memory and their synopsis
   $Synopses | ? synopsis -notlike "[a-z][a-z]*" | select name, synopsis | sort -property name  
 
 }
+set-alias gfm  get-functionsinmemory  
+
 function show-functionsinmemory { 
+<#
+.SYNOPSIS
+  Get and format the functions in memory and their synopsis
+#>
+
   [CmdletBinding()]
   Param ([String] $FunctionPattern )
   write-verbose "In show-functionsinmemory: $FunctionPattern"
   get-functionsinmemory $FunctionPattern | ft -a 
 }
 set-alias sf2  show-functionsinmemory  
+set-alias sfm  show-functionsinmemory  

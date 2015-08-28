@@ -32,6 +32,10 @@ function get-historymatchingstring
   
 function hh
 {
+<#
+.SYNOPSIS
+  Search through history 
+#>
     [CmdletBinding()]
     Param ($Pattern = "*",
            $Tail = 50)

@@ -6,6 +6,7 @@
 function get-loggedonuser { 
 <#
 .SYNOPSIS
+  Gets a list of users logged on to a specified server
 
 
 .DESCRIPTION
@@ -39,6 +40,11 @@ Twiki list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
 
 
 function show-loggedonuser {
+<#
+.SYNOPSIS
+  Gets a list of users logged on to a specified server. No formatting, yet.
+
+
   [CmdletBinding()]	
 	Param( [String] $Computername)
   

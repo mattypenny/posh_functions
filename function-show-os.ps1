@@ -8,6 +8,11 @@
 
 function get-os 
 { 
+<#
+.SYNOPSIS
+  Get OS details for specified computer
+#>
+
   [CmdletBinding()]
   Param ( $ComputerNameList = ".")
 
@@ -19,6 +24,11 @@ function get-os
 }
 
 function show-os {
+<#
+.SYNOPSIS
+Get and format computer os details
+#>
+
   [CmdletBinding()]
   Param ( $ComputerNameList = ".")
 
@@ -68,7 +78,12 @@ set-alias sos show-os
 set-alias gos get-os
 
 
-function soss { 
+function Get-InstallDateAndLastBootTime { 
+<#
+.SYNOPSIS
+  Gets install date and last boot time
+#>
+
 [CmdletBinding()]
 Param ( [String] $ComputerName = ".")
 

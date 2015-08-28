@@ -105,6 +105,7 @@ Twiki list: http://www.vistax64.com/powershell/17834-unix-cal-command.html
   }
   $Space=" "
 
+  # Todo: think about likely errors and change to try/catch
   trap { Write-Host -f red "Exception occurred while parsing month/year parameters.";$script:err=$true;continue}
 
   write-debug "After trap statenebt"

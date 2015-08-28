@@ -1,8 +1,3 @@
-# ----------------------------------------------------------------------
-# Function: aliasname - gel - show-eventlog
-#
-#           This function just formats the eventlog nicely
-# ----------------------------------------------------------------------
 function show-eventlog { 
 <#
 .SYNOPSIS
