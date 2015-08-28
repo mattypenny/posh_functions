@@ -111,10 +111,65 @@ function Get-ExtendedFileProperties
 }
  
 
+<#
+.SYNOPSIS
+   Short description
+
+.DESCRIPTION
+   This code is based on Shaun Cassells Get-Mp3FilesLessThan which I found at:
+   http://myitforum.com/myitforumwp/2012/07/24/music-library-cleaning-with-powershell-identifying-old-mp3-files-with-low-bitrates/
+
+.EXAMPLE
+   Example of how to use this cmdlet
+
+.EXAMPLE
+   Another example of how to use this cmdlet
+#>
+function Get-Mp3Poperties
+            
+{
+  [CmdletBinding()]
+  [Alias()]
+  Param( [string]$folder = "$pwd" ) 
+
+  Begin
+  {
+  }
+  
+
+  Process
+  {
+
+    # Todo: Need to remember/work out how to pass switches betwwen functions i.e. -verbose and -recurse
+    Get-ExtendedFileProperties -folder $folder
+  
+  
+    $Files = Get-ChildItem $folder -recurse 
+  
+    foreach( $file in $Files ) 
+    {
+  
+      write-verbose "Processing file $file"
+  
+      $Mp3Object = New-Object -PSObject -Property @{}
+
+      return $Mp3Object
+  
+    }
+  
+  }
+  End
+  {
+  }
+}
+ 
+
 # todo: function to just extract the mp3 stuff
 #
  
 
-$X = Get-Rawmp3tags -folder "D:\music\Desm*" -verbose
+ 
+
+$X = Get-ExtendedFileProperties -folder "D:\music\Desm*" -verbose
 $X | select Size, Album
 # vim: set softtabstop=2 shiftwidth=2 expandtab

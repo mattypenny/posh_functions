@@ -1,40 +1,39 @@
-# ----------------------------------------------------------------------
-# Function: aliasname - 
-#
-#           This function
-# ----------------------------------------------------------------------
-function template { 
 <#
 .SYNOPSIS
-
+  One-line description
 
 .DESCRIPTION
+  Longer description
 
+.PARAMETER
 
-
-.PARAMETER MyServer
-
-
-
-.INPUTS
-None. You cannot pipe objects to this function
 
 .EXAMPLE
+  Example of how to use this cmdlet
 
 .EXAMPLE
- 
-
-.LINK
-Twiki list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
-
-
+  Another example of how to use this cmdlet
 #>
-  [CmdletBinding()]	
-	Param( [String] $Computername)
+function get-template { 
+{
+  [CmdletBinding()]
+  [Alias()]
+  Param( [string]$folder = "$pwd" ) 
 
+  Begin
+  {
+  }
 
+  Process
+  {
+  }
+
+  End
+  {
+  }
 }
-set-alias aliasname template
+}
+set-alias aliasname get-template
 
 
 <#
