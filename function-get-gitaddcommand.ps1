@@ -44,3 +44,5 @@ function Get-GitAddCommand
     }
     
 }
+
+set-alias ggac get-gitaddcommand

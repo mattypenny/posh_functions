@@ -24,12 +24,3 @@ function wcl {
 Does an equivalent of wc 0k
 #>
 Param ($FileName = "$PROFILE" ); gc $Filename | measure-object -line}
-
-
-function edit-powershellref { 
-    gvim "\\$RepositoryServer\d$\dbawork\matt\quickref.txt"
-}
-set-alias qref edit-powershellref
-set-alias pref edit-powershellref
-set-alias qrg edit-powershellref
-set-alias qrv edit-powershellref
