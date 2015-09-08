@@ -24,3 +24,23 @@ function wcl {
 Does an equivalent of wc 0k
 #>
 Param ($FileName = "$PROFILE" ); gc $Filename | measure-object -line}
+
+function gvim 
+<#
+.SYNOPSIS
+Edits file and returns control to Poswershell command line
+#>
+{ [CmdletBinding()]
+  param ($FileNames) 
+
+  
+  foreach ($F in $FileNames)
+  {
+    & "C:\Program Files (x86)\vim\vim74\gvim.exe" $F
+    write-verbose "Edited $(dir $F | select fullname, lastwritetime, length | ft -a)"
+  }
+
+}
+<#
+vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+#>

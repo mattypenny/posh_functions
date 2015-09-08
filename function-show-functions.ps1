@@ -6,7 +6,7 @@ function get-functions {
 .SYNOPSIS
 Show the functions in the repository folder
 #>
-$SHOW_FUNCTIONS_OBJECT = gci \\$RepositoryServer\d$\dbawork\matt\functions\*.ps1 
+$SHOW_FUNCTIONS_OBJECT = gci \\$RepositoryServer\d$\dbawork\matt\functions\*.ps1,$GhFunctions\*.ps1
 $SHOW_FUNCTIONS_OBJECT
 }
 set-alias getf get-functions
@@ -16,8 +16,7 @@ function show-functions {
 .SYNOPSIS
 Show the functions 
 #>
-get-functions | ft -a
-
+get-functions | select lastwritetime, length, fullname | ft -a
 }
 
 set-alias sf show-functions
