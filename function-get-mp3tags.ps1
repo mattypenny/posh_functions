@@ -9,57 +9,13 @@
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Get-ExtendedFileProperties
+function Get-RawExtendedFileProperties
             
 {
   [CmdletBinding()]
   [Alias()]
   Param( [string]$folder = "$pwd" ) 
 
-  Begin
-  {
-    $CurrentlyKnownTags =
-      "Name",
-      "Size",
-      "Item type",
-      "Date modified",
-      "Date created",
-      "Date accessed",
-      "Attributes",
-      "Availability",
-      "Perceived type",
-      "Owner",
-      "Kind",
-      "Contributing artists",
-      "Album",
-      "Year",
-      "Genre",
-      "Rating",
-      "Authors",
-      "Title",
-      "Comments",
-      "#",
-      "Length",
-      "Bit rate",
-      "Protected",
-      "Total size",
-      "Computer",
-      "File extension",
-      "Filename",
-      "Space free",
-      "Shared",
-      "Folder name",
-      "Folder path",
-      "Folder",
-      "Path",
-      "Type",
-      "Link status",
-      "Space used",
-      "Sharing status"
-
-    # write-verbose "$CurrentlyKnownTags $CurrentlyKnownTags"
-  }
-  
 
   Process
   {
@@ -72,7 +28,7 @@ function Get-ExtendedFileProperties
     foreach( $file in $Files ) 
     {
   
-      write-verbose "Processing file $file"
+      write-verbose "Get-RawExtendedFileProperties: Processing file $file"
   
       $directoryObject = $shellObject.NameSpace( $file.Directory.FullName )
   
@@ -124,7 +80,7 @@ function Get-ExtendedFileProperties
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Get-Mp3Properties
+function Get-CookedExtendedFileProperties
             
 {
   [CmdletBinding()]
@@ -147,336 +103,316 @@ function Get-Mp3Properties
     foreach( $file in $Files ) 
     {
   
-      write-verbose "Processing file $file"
-      $ExtendedFileProperties = Get-ExtendedFileProperties -folder $file
+      write-verbose "Get-CookedExtendedFileProperties: Processing file $file"
+      $RawExtendedFileProperties = Get-RawExtendedFileProperties -folder $file
   
 
-<#
-$obj = [PSCustomObject]@{
-Property1 = 'one'
-Property2 = 'two'
-Property3 = 'three'
-}
-$obj
-#>
+      $CookedObject = [PSCustomObject]@{ 
+        SequenceNumber = $RawExtendedFileProperties."#"
+        ThirtyFiveMmFocalLength  = $RawExtendedFileProperties."35mmFocalLength"
+        AccountName  = $RawExtendedFileProperties.AccountName  
+        Album = $RawExtendedFileProperties.Album  
+        AlbumArtist = $RawExtendedFileProperties.AlbumArtist  
+        AlbumID = $RawExtendedFileProperties.AlbumID  
+        Anniversary = $RawExtendedFileProperties.Anniversary
+        AssistantsName = $RawExtendedFileProperties."Assistant'sName"
+        AssistantsPhone = $RawExtendedFileProperties."Assistant'sPhone"
+        Attachments = $RawExtendedFileProperties.Attachments
+        Attributes = $RawExtendedFileProperties.Attributes
+        Authors = $RawExtendedFileProperties.Authors
+        Autosummary = $RawExtendedFileProperties.Autosummary
+        Availability = $RawExtendedFileProperties.Availability
+        Bcc = $RawExtendedFileProperties.Bcc
+        BccAddresses = $RawExtendedFileProperties.BccAddresses
+        BeatsPerMinute = $RawExtendedFileProperties."Beats-per-minute"
+        BillingInformation = $RawExtendedFileProperties.BillingInformation
+        Birthday = $RawExtendedFileProperties.Birthday
+        BitDepth = $RawExtendedFileProperties.BitDepth
+        BitRate = $RawExtendedFileProperties.BitRate
+        BroadcastDate = $RawExtendedFileProperties.BroadcastDate
+        BusinessAddress = $RawExtendedFileProperties.BusinessAddress
+        BusinessCity = $RawExtendedFileProperties.BusinessCity
+        BusinessCountryOrRegion = $RawExtendedFileProperties."BusinessCountry/Region"
+        BusinessCountyOrRegion = $RawExtendedFileProperties."BusinessCounty/Region"
+        BusinessFax = $RawExtendedFileProperties.BusinessFax
+        BusinessHomepage = $RawExtendedFileProperties.BusinessHomepage
+        BusinessPOBox = $RawExtendedFileProperties."BusinessP.O.Box"
+        BusinessPhone = $RawExtendedFileProperties.BusinessPhone
+        BusinessPostcode = $RawExtendedFileProperties.BusinessPostcode
+        BusinessStreet = $RawExtendedFileProperties.BusinessStreet
+        ByLocation = $RawExtendedFileProperties.ByLocation
+        CallBackNumber = $RawExtendedFileProperties."Call-BackNumber"
+        CameraMaker = $RawExtendedFileProperties.CameraMaker
+        CameraModel = $RawExtendedFileProperties.CameraModel
+        CarPhone = $RawExtendedFileProperties.CarPhone
+        Categories = $RawExtendedFileProperties.Categories
+        Cc = $RawExtendedFileProperties.Cc
+        CcAddresses = $RawExtendedFileProperties.CcAddresses
+        ChannelNumber = $RawExtendedFileProperties.ChannelNumber
+        Children = $RawExtendedFileProperties.Children
+        City = $RawExtendedFileProperties.City
+        Classification = $RawExtendedFileProperties.Classification
+        ClientID = $RawExtendedFileProperties.ClientID
+        ClosedCaptioning = $RawExtendedFileProperties.ClosedCaptioning
+        Colour = $RawExtendedFileProperties.Colour
+        Comments = $RawExtendedFileProperties.Comments
+        Company = $RawExtendedFileProperties.Company
+        CompanyMainphone = $RawExtendedFileProperties.CompanyMainphone
+        Complete = $RawExtendedFileProperties.Complete
+        Composers = $RawExtendedFileProperties.Composers
+        Computer = $RawExtendedFileProperties.Computer
+        Conductors = $RawExtendedFileProperties.Conductors
+        Connected = $RawExtendedFileProperties.Connected
+        ContactNames = $RawExtendedFileProperties.ContactNames
+        ContentCreated = $RawExtendedFileProperties.ContentCreated
+        ContentStatus = $RawExtendedFileProperties.ContentStatus
+        ContentType = $RawExtendedFileProperties.ContentType
+        ContributingArtists = $RawExtendedFileProperties.ContributingArtists
+        Contributors = $RawExtendedFileProperties.Contributors
+        ConversationID = $RawExtendedFileProperties.ConversationID
+        Copyright = $RawExtendedFileProperties.Copyright
+        CountryOrRegion = $RawExtendedFileProperties."Country/Region"
+        CountyOrRegion = $RawExtendedFileProperties."County/Region"
+        Creators = $RawExtendedFileProperties.Creators
+        DataRate = $RawExtendedFileProperties.DataRate
+        Date = $RawExtendedFileProperties.Date
+        DateAccessed = $RawExtendedFileProperties.DateAccessed
+        DateAcquired = $RawExtendedFileProperties.DateAcquired
+        DateArchived = $RawExtendedFileProperties.DateArchived
+        DateCompleted = $RawExtendedFileProperties.DateCompleted
+        DateCreated = $RawExtendedFileProperties.DateCreated
+        DateLastSaved = $RawExtendedFileProperties.DateLastSaved
+        DateModified = $RawExtendedFileProperties.DateModified
+        DateReceived = $RawExtendedFileProperties.DateReceived
+        DateReleased = $RawExtendedFileProperties.DateReleased
+        DateSent = $RawExtendedFileProperties.DateSent
+        DateTaken = $RawExtendedFileProperties.DateTaken
+        DateVisited = $RawExtendedFileProperties.DateVisited
+        Department = $RawExtendedFileProperties.Department
+        Description = $RawExtendedFileProperties.Description
+        Devicecategory = $RawExtendedFileProperties.Devicecategory
+        Dimensions = $RawExtendedFileProperties.Dimensions
+        Directors = $RawExtendedFileProperties.Directors
+        DiscoveryMethod = $RawExtendedFileProperties.DiscoveryMethod
+        Division = $RawExtendedFileProperties.Division
+        DocumentID = $RawExtendedFileProperties.DocumentID
+        DueDate = $RawExtendedFileProperties.DueDate
+        Duration = $RawExtendedFileProperties.Duration
+        Email2 = $RawExtendedFileProperties.Email2
+        Email3 = $RawExtendedFileProperties.Email3
+        EmailAddress = $RawExtendedFileProperties.EmailAddress
+        EmailDisplayname = $RawExtendedFileProperties.EmailDisplayname
+        EmailList = $RawExtendedFileProperties.EmailList
+        EncodedBy = $RawExtendedFileProperties.EncodedBy
+        EncryptedTo = $RawExtendedFileProperties.EncryptedTo
+        EncryptionStatus = $RawExtendedFileProperties.EncryptionStatus
+        EndDate = $RawExtendedFileProperties.EndDate
+        EntryType = $RawExtendedFileProperties.EntryType
+        EpisodeName = $RawExtendedFileProperties.EpisodeName
+        EpisodeNumber = $RawExtendedFileProperties.EpisodeNumber
+        Event = $RawExtendedFileProperties.Event
+        ExifVersion = $RawExtendedFileProperties.ExifVersion
+        ExposureBias = $RawExtendedFileProperties.ExposureBias
+        ExposureProgram = $RawExtendedFileProperties.ExposureProgram
+        ExposureTime = $RawExtendedFileProperties.ExposureTime
+        FStop = $RawExtendedFileProperties."F-Stop"
+        FileAs = $RawExtendedFileProperties.FileAs
+        FileCount = $RawExtendedFileProperties.FileCount
+        FileDescription = $RawExtendedFileProperties.FileDescription
+        FileExtension = $RawExtendedFileProperties.FileExtension
+        Filename = $RawExtendedFileProperties.Filename
+        FileVersion = $RawExtendedFileProperties.FileVersion
+        FirstName = $RawExtendedFileProperties.FirstName
+        FlagColour = $RawExtendedFileProperties.FlagColour
+        FlagStatus = $RawExtendedFileProperties.FlagStatus
+        FlashMode = $RawExtendedFileProperties.FlashMode
+        FocalLength = $RawExtendedFileProperties.FocalLength
+        Folder = $RawExtendedFileProperties.Folder
+        FolderName = $RawExtendedFileProperties.FolderName
+        FolderPath = $RawExtendedFileProperties.FolderPath
+        FrameHeight = $RawExtendedFileProperties.FrameHeight
+        FrameRate = $RawExtendedFileProperties.FrameRate
+        FrameWidth = $RawExtendedFileProperties.FrameWidth
+        FreeOrBusyStatus = $RawExtendedFileProperties."Free/BusyStatus"
+        FriendlyName = $RawExtendedFileProperties.FriendlyName
+        From = $RawExtendedFileProperties.From
+        FromAddresses = $RawExtendedFileProperties.FromAddresses
+        FullName = $RawExtendedFileProperties.FullName
+        FullStop = $RawExtendedFileProperties.FullStop
+        Gender = $RawExtendedFileProperties.Gender
+        Genre = $RawExtendedFileProperties.Genre
+        GivenName = $RawExtendedFileProperties.GivenName
+        Group = $RawExtendedFileProperties.Group
+        HasAttachments = $RawExtendedFileProperties.HasAttachments
+        HasFlag = $RawExtendedFileProperties.HasFlag
+        Height = $RawExtendedFileProperties.Height
+        Hobbies = $RawExtendedFileProperties.Hobbies
+        HomeAddress = $RawExtendedFileProperties.HomeAddress
+        HomeCity = $RawExtendedFileProperties.HomeCity
+        HomeCountryOrRegion = $RawExtendedFileProperties."HomeCountry/region"
+        HomeCountyOrRegion = $RawExtendedFileProperties."HomeCounty/region"
+        HomeFax = $RawExtendedFileProperties.HomeFax
+        HomePoBox = $RawExtendedFileProperties."HomeP.o.Box"
+        HomePhone = $RawExtendedFileProperties.HomePhone
+        HomePostcode = $RawExtendedFileProperties.HomePostcode
+        HomeStreet = $RawExtendedFileProperties.HomeStreet
+        HorizontalResolution = $RawExtendedFileProperties.HorizontalResolution
+        ImAddresses = $RawExtendedFileProperties.ImAddresses
+        Importance = $RawExtendedFileProperties.Importance
+        Incomplete = $RawExtendedFileProperties.Incomplete
+        InitialKey = $RawExtendedFileProperties.InitialKey
+        Initials = $RawExtendedFileProperties.Initials
+        IsAttachment = $RawExtendedFileProperties.IsAttachment
+        IsCompleted = $RawExtendedFileProperties.IsCompleted
+        IsDeleted = $RawExtendedFileProperties.IsDeleted
+        IsOnline = $RawExtendedFileProperties.IsOnline
+        IsoSpeed = $RawExtendedFileProperties.IsoSpeed
+        IsRecurring = $RawExtendedFileProperties.IsRecurring
+        ItemType = $RawExtendedFileProperties.ItemType
+        JobTitle = $RawExtendedFileProperties.JobTitle
+        Kind = $RawExtendedFileProperties.Kind
+        Label = $RawExtendedFileProperties.Label
+        Language = $RawExtendedFileProperties.Language
+        LastPrinted = $RawExtendedFileProperties.LastPrinted
+        LegalTrademarks = $RawExtendedFileProperties.LegalTrademarks
+        Length = $RawExtendedFileProperties.Length
+        LensMaker = $RawExtendedFileProperties.LensMaker
+        LensModel = $RawExtendedFileProperties.LensModel
+        LightSource = $RawExtendedFileProperties.LightSource
+        LinkStatus = $RawExtendedFileProperties.LinkStatus
+        LinkTarget = $RawExtendedFileProperties.LinkTarget
+        LocalComputer = $RawExtendedFileProperties.LocalComputer
+        Location = $RawExtendedFileProperties.Location
+        Manufacturer = $RawExtendedFileProperties.Manufacturer
+        MaxAperture = $RawExtendedFileProperties.MaxAperture
+        MediaCreated = $RawExtendedFileProperties.MediaCreated
+        MeetingStatus = $RawExtendedFileProperties.MeetingStatus
+        MeteringMode = $RawExtendedFileProperties.MeteringMode
+        MiddleName = $RawExtendedFileProperties.MiddleName
+        Mileage = $RawExtendedFileProperties.Mileage
+        MobilePhone = $RawExtendedFileProperties.MobilePhone
+        Model = $RawExtendedFileProperties.Model
+        Mood = $RawExtendedFileProperties.Mood
+        Name = $RawExtendedFileProperties.Name
+        Nickname = $RawExtendedFileProperties.Nickname
+        OfficeLocation = $RawExtendedFileProperties.OfficeLocation
+        OfflineStatus = $RawExtendedFileProperties.OfflineStatus
+        OptionalAttendeeAddresses = $RawExtendedFileProperties.OptionalAttendeeAddresses
+        OptionalAttendees = $RawExtendedFileProperties.OptionalAttendees
+        OrganiserAddress = $RawExtendedFileProperties.OrganiserAddress
+        OrganiserName = $RawExtendedFileProperties.OrganiserName
+        Orientation = $RawExtendedFileProperties.Orientation
+        OtherAddress = $RawExtendedFileProperties.OtherAddress
+        OtherCity = $RawExtendedFileProperties.OtherCity
+        OtherCountryOrRegion = $RawExtendedFileProperties."OtherCountry/Region"
+        OtherCountyOrRegion = $RawExtendedFileProperties."OtherCounty/Region"
+        OtherPoBox = $RawExtendedFileProperties."OtherP.o.Box"
+        OtherPostCode = $RawExtendedFileProperties.OtherPostCode
+        OtherStreet = $RawExtendedFileProperties.OtherStreet
+        Owner = $RawExtendedFileProperties.Owner
+        PoBox = $RawExtendedFileProperties."P.O.box"
+        Pager = $RawExtendedFileProperties.Pager
+        Pages = $RawExtendedFileProperties.Pages
+        Paired = $RawExtendedFileProperties.Paired
+        ParentalRating = $RawExtendedFileProperties.ParentalRating
+        ParentalRatingReason = $RawExtendedFileProperties.ParentalRatingReason
+        Participants = $RawExtendedFileProperties.Participants
+        PartOfACompilation = $RawExtendedFileProperties.PartOfACompilation
+        PartOfSet = $RawExtendedFileProperties.PartOfSet
+        Path = $RawExtendedFileProperties.Path
+        People = $RawExtendedFileProperties.People
+        PerceivedType = $RawExtendedFileProperties.PerceivedType
+        PersonalTitle = $RawExtendedFileProperties.PersonalTitle
+        PostalAddress = $RawExtendedFileProperties.PostalAddress
+        Postcode = $RawExtendedFileProperties.Postcode
+        PrimaryEmail = $RawExtendedFileProperties.PrimaryEmail
+        PrimaryPhone = $RawExtendedFileProperties.PrimaryPhone
+        Priority = $RawExtendedFileProperties.Priority
+        Producers = $RawExtendedFileProperties.Producers
+        ProductName = $RawExtendedFileProperties.ProductName
+        ProductVersion = $RawExtendedFileProperties.ProductVersion
+        Profession = $RawExtendedFileProperties.Profession
+        ProgramDescription = $RawExtendedFileProperties.ProgramDescription
+        ProgramMode = $RawExtendedFileProperties.ProgramMode
+        ProgramName = $RawExtendedFileProperties.ProgramName
+        Project = $RawExtendedFileProperties.Project
+        Protected = $RawExtendedFileProperties.Protected
+        Publisher = $RawExtendedFileProperties.Publisher
+        Rating = $RawExtendedFileProperties.Rating
+        ReadStatus = $RawExtendedFileProperties.ReadStatus
+        RecordingTime = $RawExtendedFileProperties.RecordingTime
+        ReminderTime = $RawExtendedFileProperties.ReminderTime
+        RequiredAttendeeAddresses = $RawExtendedFileProperties.RequiredAttendeeAddresses
+        RequiredAttendees = $RawExtendedFileProperties.RequiredAttendees
+        Rerun = $RawExtendedFileProperties.Rerun
+        Resources = $RawExtendedFileProperties.Resources
+        SAP = $RawExtendedFileProperties.SAP
+        Saturation = $RawExtendedFileProperties.Saturation
+        SearchRanking = $RawExtendedFileProperties.SearchRanking
+        SeasonNumber = $RawExtendedFileProperties.SeasonNumber
+        SenderAddress = $RawExtendedFileProperties.SenderAddress
+        SenderName = $RawExtendedFileProperties.SenderName
+        Sensitivity = $RawExtendedFileProperties.Sensitivity
+        Shared = $RawExtendedFileProperties.Shared
+        SharedWith = $RawExtendedFileProperties.SharedWith
+        Sharing = $RawExtendedFileProperties.Sharing
+        SharingStatus = $RawExtendedFileProperties.SharingStatus
+        SharingType = $RawExtendedFileProperties.SharingType
+        Size = $RawExtendedFileProperties.Size
+        Slides = $RawExtendedFileProperties.Slides
+        Snippets = $RawExtendedFileProperties.Snippets
+        SortAlbum = $RawExtendedFileProperties.SortAlbum
+        SortAlbumArtist = $RawExtendedFileProperties.SortAlbumArtist
+        SortComposer = $RawExtendedFileProperties.SortComposer
+        SortContributingArtists = $RawExtendedFileProperties.SortContributingArtists
+        SortTitle = $RawExtendedFileProperties.SortTitle
+        Source = $RawExtendedFileProperties.Source
+        SpaceFree = $RawExtendedFileProperties.SpaceFree
+        SpaceUsed = $RawExtendedFileProperties.SpaceUsed
+        SpouseOrPartner = $RawExtendedFileProperties."Spouse/Partner"
+        StartDate = $RawExtendedFileProperties.StartDate
+        StationCallSign = $RawExtendedFileProperties.StationCallSign
+        StationName = $RawExtendedFileProperties.StationName
+        Status = $RawExtendedFileProperties.Status
+        Store = $RawExtendedFileProperties.Store
+        Street = $RawExtendedFileProperties.Street
+        Subject = $RawExtendedFileProperties.Subject
+        SubjectDistance = $RawExtendedFileProperties.SubjectDistance
+        Subtitle = $RawExtendedFileProperties.Subtitle
+        Suffix = $RawExtendedFileProperties.Suffix
+        Summary = $RawExtendedFileProperties.Summary
+        SupportLink = $RawExtendedFileProperties.SupportLink
+        Surname = $RawExtendedFileProperties.Surname
+        Tags = $RawExtendedFileProperties.Tags
+        TaskOwner = $RawExtendedFileProperties.TaskOwner
+        TaskStatus = $RawExtendedFileProperties.TaskStatus
+        Telex = $RawExtendedFileProperties.Telex
+        Title = $RawExtendedFileProperties.Title
+        To = $RawExtendedFileProperties.To
+        ToAddresses = $RawExtendedFileProperties.ToAddresses
+        TodoTitle = $RawExtendedFileProperties.TodoTitle
+        TotalBitRate = $RawExtendedFileProperties.TotalBitRate
+        TotalEditingTime = $RawExtendedFileProperties.TotalEditingTime
+        TotalFileSize = $RawExtendedFileProperties.TotalFileSize
+        TotalSize = $RawExtendedFileProperties.TotalSize
+        TTYOrTTDphone = $RawExtendedFileProperties."TTY/TTDphone"
+        Type = $RawExtendedFileProperties.Type
+        URL = $RawExtendedFileProperties.URL
+        UserWebURL = $RawExtendedFileProperties.UserWebURL
+        VerticalResolution = $RawExtendedFileProperties.VerticalResolution
+        Videocompression = $RawExtendedFileProperties.Videocompression
+        VideoOrientation = $RawExtendedFileProperties.VideoOrientation
+        WebPage = $RawExtendedFileProperties.WebPage
+        WhiteBalance = $RawExtendedFileProperties.WhiteBalance
+        Width = $RawExtendedFileProperties.Width
+        WordCount = $RawExtendedFileProperties.WordCount
+        Writers = $RawExtendedFileProperties.Writers
+        Year = $RawExtendedFileProperties.Year
+      
+      } #EndCustomObject
 
-# "File.AccountName"
-# "$File.Album"
-# $RawObject = [PSCustomObject]@{ # SequenceNumber = "$File.`#"
-
-$RawObject = [PSCustomObject]@{ 
-SequenceNumber = $ExtendedFileProperties."#"
-ThirtyFiveMmFocalLength  = $ExtendedFileProperties."35mmFocalLength"
-AccountName  = $ExtendedFileProperties.AccountName  
-Album = $ExtendedFileProperties.Album  
-AlbumArtist = $ExtendedFileProperties.AlbumArtist  
-AlbumID = $ExtendedFileProperties.AlbumID  
-Anniversary = $ExtendedFileProperties.Anniversary
-AssistantsName = $ExtendedFileProperties."Assistant'sName"
-AssistantsPhone = $ExtendedFileProperties."Assistant'sPhone"
-Attachments = $ExtendedFileProperties.Attachments
-Attributes = $ExtendedFileProperties.Attributes
-Authors = $ExtendedFileProperties.Authors
-Autosummary = $ExtendedFileProperties.Autosummary
-Availability = $ExtendedFileProperties.Availability
-Bcc = $ExtendedFileProperties.Bcc
-BccAddresses = $ExtendedFileProperties.BccAddresses
-BeatsPerMinute = $ExtendedFileProperties."Beats-per-minute"
-BillingInformation = $ExtendedFileProperties.BillingInformation
-Birthday = $ExtendedFileProperties.Birthday
-BitDepth = $ExtendedFileProperties.BitDepth
-BitRate = $ExtendedFileProperties.BitRate
-BroadcastDate = $ExtendedFileProperties.BroadcastDate
-BusinessAddress = $ExtendedFileProperties.BusinessAddress
-BusinessCity = $ExtendedFileProperties.BusinessCity
-BusinessCountryOrRegion = $ExtendedFileProperties."BusinessCountry/Region"
-BusinessCountyOrRegion = $ExtendedFileProperties."BusinessCounty/Region"
-BusinessFax = $ExtendedFileProperties.BusinessFax
-BusinessHomepage = $ExtendedFileProperties.BusinessHomepage
-BusinessPOBox = $ExtendedFileProperties."BusinessP.O.Box"
-BusinessPhone = $ExtendedFileProperties.BusinessPhone
-BusinessPostcode = $ExtendedFileProperties.BusinessPostcode
-BusinessStreet = $ExtendedFileProperties.BusinessStreet
-ByLocation = $ExtendedFileProperties.ByLocation
-CallBackNumber = $ExtendedFileProperties."Call-BackNumber"
-CameraMaker = $ExtendedFileProperties.CameraMaker
-CameraModel = $ExtendedFileProperties.CameraModel
-CarPhone = $ExtendedFileProperties.CarPhone
-Categories = $ExtendedFileProperties.Categories
-Cc = $ExtendedFileProperties.Cc
-CcAddresses = $ExtendedFileProperties.CcAddresses
-ChannelNumber = $ExtendedFileProperties.ChannelNumber
-Children = $ExtendedFileProperties.Children
-City = $ExtendedFileProperties.City
-Classification = $ExtendedFileProperties.Classification
-ClientID = $ExtendedFileProperties.ClientID
-ClosedCaptioning = $ExtendedFileProperties.ClosedCaptioning
-Colour = $ExtendedFileProperties.Colour
-Comments = $ExtendedFileProperties.Comments
-Company = $ExtendedFileProperties.Company
-CompanyMainphone = $ExtendedFileProperties.CompanyMainphone
-Complete = $ExtendedFileProperties.Complete
-Composers = $ExtendedFileProperties.Composers
-Computer = $ExtendedFileProperties.Computer
-Conductors = $ExtendedFileProperties.Conductors
-Connected = $ExtendedFileProperties.Connected
-ContactNames = $ExtendedFileProperties.ContactNames
-ContentCreated = $ExtendedFileProperties.ContentCreated
-ContentStatus = $ExtendedFileProperties.ContentStatus
-ContentType = $ExtendedFileProperties.ContentType
-ContributingArtists = $ExtendedFileProperties.ContributingArtists
-Contributors = $ExtendedFileProperties.Contributors
-ConversationID = $ExtendedFileProperties.ConversationID
-Copyright = $ExtendedFileProperties.Copyright
-CountryOrRegion = $ExtendedFileProperties."Country/Region"
-CountyOrRegion = $ExtendedFileProperties."County/Region"
-Creators = $ExtendedFileProperties.Creators
-DataRate = $ExtendedFileProperties.DataRate
-Date = $ExtendedFileProperties.Date
-DateAccessed = $ExtendedFileProperties.DateAccessed
-DateAcquired = $ExtendedFileProperties.DateAcquired
-DateArchived = $ExtendedFileProperties.DateArchived
-DateCompleted = $ExtendedFileProperties.DateCompleted
-DateCreated = $ExtendedFileProperties.DateCreated
-DateLastSaved = $ExtendedFileProperties.DateLastSaved
-DateModified = $ExtendedFileProperties.DateModified
-DateReceived = $ExtendedFileProperties.DateReceived
-DateReleased = $ExtendedFileProperties.DateReleased
-DateSent = $ExtendedFileProperties.DateSent
-DateTaken = $ExtendedFileProperties.DateTaken
-DateVisited = $ExtendedFileProperties.DateVisited
-Department = $ExtendedFileProperties.Department
-Description = $ExtendedFileProperties.Description
-Devicecategory = $ExtendedFileProperties.Devicecategory
-Dimensions = $ExtendedFileProperties.Dimensions
-Directors = $ExtendedFileProperties.Directors
-DiscoveryMethod = $ExtendedFileProperties.DiscoveryMethod
-Division = $ExtendedFileProperties.Division
-DocumentID = $ExtendedFileProperties.DocumentID
-DueDate = $ExtendedFileProperties.DueDate
-Duration = $ExtendedFileProperties.Duration
-Email2 = $ExtendedFileProperties.Email2
-Email3 = $ExtendedFileProperties.Email3
-EmailAddress = $ExtendedFileProperties.EmailAddress
-EmailDisplayname = $ExtendedFileProperties.EmailDisplayname
-EmailList = $ExtendedFileProperties.EmailList
-EncodedBy = $ExtendedFileProperties.EncodedBy
-EncryptedTo = $ExtendedFileProperties.EncryptedTo
-EncryptionStatus = $ExtendedFileProperties.EncryptionStatus
-EndDate = $ExtendedFileProperties.EndDate
-EntryType = $ExtendedFileProperties.EntryType
-EpisodeName = $ExtendedFileProperties.EpisodeName
-EpisodeNumber = $ExtendedFileProperties.EpisodeNumber
-Event = $ExtendedFileProperties.Event
-ExifVersion = $ExtendedFileProperties.ExifVersion
-ExposureBias = $ExtendedFileProperties.ExposureBias
-ExposureProgram = $ExtendedFileProperties.ExposureProgram
-ExposureTime = $ExtendedFileProperties.ExposureTime
-FStop = $ExtendedFileProperties."F-Stop"
-FileAs = $ExtendedFileProperties.FileAs
-FileCount = $ExtendedFileProperties.FileCount
-FileDescription = $ExtendedFileProperties.FileDescription
-FileExtension = $ExtendedFileProperties.FileExtension
-Filename = $ExtendedFileProperties.Filename
-FileVersion = $ExtendedFileProperties.FileVersion
-FirstName = $ExtendedFileProperties.FirstName
-FlagColour = $ExtendedFileProperties.FlagColour
-FlagStatus = $ExtendedFileProperties.FlagStatus
-FlashMode = $ExtendedFileProperties.FlashMode
-FocalLength = $ExtendedFileProperties.FocalLength
-Folder = $ExtendedFileProperties.Folder
-FolderName = $ExtendedFileProperties.FolderName
-FolderPath = $ExtendedFileProperties.FolderPath
-FrameHeight = $ExtendedFileProperties.FrameHeight
-FrameRate = $ExtendedFileProperties.FrameRate
-FrameWidth = $ExtendedFileProperties.FrameWidth
-FreeOrBusyStatus = $ExtendedFileProperties."Free/BusyStatus"
-FriendlyName = $ExtendedFileProperties.FriendlyName
-From = $ExtendedFileProperties.From
-FromAddresses = $ExtendedFileProperties.FromAddresses
-FullName = $ExtendedFileProperties.FullName
-FullStop = $ExtendedFileProperties.FullStop
-Gender = $ExtendedFileProperties.Gender
-Genre = $ExtendedFileProperties.Genre
-GivenName = $ExtendedFileProperties.GivenName
-Group = $ExtendedFileProperties.Group
-HasAttachments = $ExtendedFileProperties.HasAttachments
-HasFlag = $ExtendedFileProperties.HasFlag
-Height = $ExtendedFileProperties.Height
-Hobbies = $ExtendedFileProperties.Hobbies
-HomeAddress = $ExtendedFileProperties.HomeAddress
-HomeCity = $ExtendedFileProperties.HomeCity
-HomeCountryOrRegion = $ExtendedFileProperties."HomeCountry/region"
-HomeCountyOrRegion = $ExtendedFileProperties."HomeCounty/region"
-HomeFax = $ExtendedFileProperties.HomeFax
-HomePoBox = $ExtendedFileProperties."HomeP.o.Box"
-HomePhone = $ExtendedFileProperties.HomePhone
-HomePostcode = $ExtendedFileProperties.HomePostcode
-HomeStreet = $ExtendedFileProperties.HomeStreet
-HorizontalResolution = $ExtendedFileProperties.HorizontalResolution
-ImAddresses = $ExtendedFileProperties.ImAddresses
-Importance = $ExtendedFileProperties.Importance
-Incomplete = $ExtendedFileProperties.Incomplete
-InitialKey = $ExtendedFileProperties.InitialKey
-Initials = $ExtendedFileProperties.Initials
-IsAttachment = $ExtendedFileProperties.IsAttachment
-IsCompleted = $ExtendedFileProperties.IsCompleted
-IsDeleted = $ExtendedFileProperties.IsDeleted
-IsOnline = $ExtendedFileProperties.IsOnline
-IsoSpeed = $ExtendedFileProperties.IsoSpeed
-IsRecurring = $ExtendedFileProperties.IsRecurring
-ItemType = $ExtendedFileProperties.ItemType
-JobTitle = $ExtendedFileProperties.JobTitle
-Kind = $ExtendedFileProperties.Kind
-Label = $ExtendedFileProperties.Label
-Language = $ExtendedFileProperties.Language
-LastPrinted = $ExtendedFileProperties.LastPrinted
-LegalTrademarks = $ExtendedFileProperties.LegalTrademarks
-Length = $ExtendedFileProperties.Length
-LensMaker = $ExtendedFileProperties.LensMaker
-LensModel = $ExtendedFileProperties.LensModel
-LightSource = $ExtendedFileProperties.LightSource
-LinkStatus = $ExtendedFileProperties.LinkStatus
-LinkTarget = $ExtendedFileProperties.LinkTarget
-LocalComputer = $ExtendedFileProperties.LocalComputer
-Location = $ExtendedFileProperties.Location
-Manufacturer = $ExtendedFileProperties.Manufacturer
-MaxAperture = $ExtendedFileProperties.MaxAperture
-MediaCreated = $ExtendedFileProperties.MediaCreated
-MeetingStatus = $ExtendedFileProperties.MeetingStatus
-MeteringMode = $ExtendedFileProperties.MeteringMode
-MiddleName = $ExtendedFileProperties.MiddleName
-Mileage = $ExtendedFileProperties.Mileage
-MobilePhone = $ExtendedFileProperties.MobilePhone
-Model = $ExtendedFileProperties.Model
-Mood = $ExtendedFileProperties.Mood
-Name = $ExtendedFileProperties.Name
-Nickname = $ExtendedFileProperties.Nickname
-OfficeLocation = $ExtendedFileProperties.OfficeLocation
-OfflineStatus = $ExtendedFileProperties.OfflineStatus
-OptionalAttendeeAddresses = $ExtendedFileProperties.OptionalAttendeeAddresses
-OptionalAttendees = $ExtendedFileProperties.OptionalAttendees
-OrganiserAddress = $ExtendedFileProperties.OrganiserAddress
-OrganiserName = $ExtendedFileProperties.OrganiserName
-Orientation = $ExtendedFileProperties.Orientation
-OtherAddress = $ExtendedFileProperties.OtherAddress
-OtherCity = $ExtendedFileProperties.OtherCity
-OtherCountryOrRegion = $ExtendedFileProperties."OtherCountry/Region"
-OtherCountyOrRegion = $ExtendedFileProperties."OtherCounty/Region"
-OtherPoBox = $ExtendedFileProperties."OtherP.o.Box"
-OtherPostCode = $ExtendedFileProperties.OtherPostCode
-OtherStreet = $ExtendedFileProperties.OtherStreet
-Owner = $ExtendedFileProperties.Owner
-PoBox = $ExtendedFileProperties."P.O.box"
-Pager = $ExtendedFileProperties.Pager
-Pages = $ExtendedFileProperties.Pages
-Paired = $ExtendedFileProperties.Paired
-ParentalRating = $ExtendedFileProperties.ParentalRating
-ParentalRatingReason = $ExtendedFileProperties.ParentalRatingReason
-Participants = $ExtendedFileProperties.Participants
-PartOfACompilation = $ExtendedFileProperties.PartOfACompilation
-PartOfSet = $ExtendedFileProperties.PartOfSet
-Path = $ExtendedFileProperties.Path
-People = $ExtendedFileProperties.People
-PerceivedType = $ExtendedFileProperties.PerceivedType
-PersonalTitle = $ExtendedFileProperties.PersonalTitle
-PostalAddress = $ExtendedFileProperties.PostalAddress
-Postcode = $ExtendedFileProperties.Postcode
-PrimaryEmail = $ExtendedFileProperties.PrimaryEmail
-PrimaryPhone = $ExtendedFileProperties.PrimaryPhone
-Priority = $ExtendedFileProperties.Priority
-Producers = $ExtendedFileProperties.Producers
-ProductName = $ExtendedFileProperties.ProductName
-ProductVersion = $ExtendedFileProperties.ProductVersion
-Profession = $ExtendedFileProperties.Profession
-ProgramDescription = $ExtendedFileProperties.ProgramDescription
-ProgramMode = $ExtendedFileProperties.ProgramMode
-ProgramName = $ExtendedFileProperties.ProgramName
-Project = $ExtendedFileProperties.Project
-Protected = $ExtendedFileProperties.Protected
-Publisher = $ExtendedFileProperties.Publisher
-Rating = $ExtendedFileProperties.Rating
-ReadStatus = $ExtendedFileProperties.ReadStatus
-RecordingTime = $ExtendedFileProperties.RecordingTime
-ReminderTime = $ExtendedFileProperties.ReminderTime
-RequiredAttendeeAddresses = $ExtendedFileProperties.RequiredAttendeeAddresses
-RequiredAttendees = $ExtendedFileProperties.RequiredAttendees
-Rerun = $ExtendedFileProperties.Rerun
-Resources = $ExtendedFileProperties.Resources
-SAP = $ExtendedFileProperties.SAP
-Saturation = $ExtendedFileProperties.Saturation
-SearchRanking = $ExtendedFileProperties.SearchRanking
-SeasonNumber = $ExtendedFileProperties.SeasonNumber
-SenderAddress = $ExtendedFileProperties.SenderAddress
-SenderName = $ExtendedFileProperties.SenderName
-Sensitivity = $ExtendedFileProperties.Sensitivity
-Shared = $ExtendedFileProperties.Shared
-SharedWith = $ExtendedFileProperties.SharedWith
-Sharing = $ExtendedFileProperties.Sharing
-SharingStatus = $ExtendedFileProperties.SharingStatus
-SharingType = $ExtendedFileProperties.SharingType
-Size = $ExtendedFileProperties.Size
-Slides = $ExtendedFileProperties.Slides
-Snippets = $ExtendedFileProperties.Snippets
-SortAlbum = $ExtendedFileProperties.SortAlbum
-SortAlbumArtist = $ExtendedFileProperties.SortAlbumArtist
-SortComposer = $ExtendedFileProperties.SortComposer
-SortContributingArtists = $ExtendedFileProperties.SortContributingArtists
-SortTitle = $ExtendedFileProperties.SortTitle
-Source = $ExtendedFileProperties.Source
-SpaceFree = $ExtendedFileProperties.SpaceFree
-SpaceUsed = $ExtendedFileProperties.SpaceUsed
-SpouseOrPartner = $ExtendedFileProperties."Spouse/Partner"
-StartDate = $ExtendedFileProperties.StartDate
-StationCallSign = $ExtendedFileProperties.StationCallSign
-StationName = $ExtendedFileProperties.StationName
-Status = $ExtendedFileProperties.Status
-Store = $ExtendedFileProperties.Store
-Street = $ExtendedFileProperties.Street
-Subject = $ExtendedFileProperties.Subject
-SubjectDistance = $ExtendedFileProperties.SubjectDistance
-Subtitle = $ExtendedFileProperties.Subtitle
-Suffix = $ExtendedFileProperties.Suffix
-Summary = $ExtendedFileProperties.Summary
-SupportLink = $ExtendedFileProperties.SupportLink
-Surname = $ExtendedFileProperties.Surname
-Tags = $ExtendedFileProperties.Tags
-TaskOwner = $ExtendedFileProperties.TaskOwner
-TaskStatus = $ExtendedFileProperties.TaskStatus
-Telex = $ExtendedFileProperties.Telex
-Title = $ExtendedFileProperties.Title
-To = $ExtendedFileProperties.To
-ToAddresses = $ExtendedFileProperties.ToAddresses
-TodoTitle = $ExtendedFileProperties.TodoTitle
-TotalBitRate = $ExtendedFileProperties.TotalBitRate
-TotalEditingTime = $ExtendedFileProperties.TotalEditingTime
-TotalFileSize = $ExtendedFileProperties.TotalFileSize
-TotalSize = $ExtendedFileProperties.TotalSize
-TTYOrTTDphone = $ExtendedFileProperties."TTY/TTDphone"
-Type = $ExtendedFileProperties.Type
-URL = $ExtendedFileProperties.URL
-UserWebURL = $ExtendedFileProperties.UserWebURL
-VerticalResolution = $ExtendedFileProperties.VerticalResolution
-Videocompression = $ExtendedFileProperties.Videocompression
-VideoOrientation = $ExtendedFileProperties.VideoOrientation
-WebPage = $ExtendedFileProperties.WebPage
-WhiteBalance = $ExtendedFileProperties.WhiteBalance
-Width = $ExtendedFileProperties.Width
-WordCount = $ExtendedFileProperties.WordCount
-Writers = $ExtendedFileProperties.Writers
-Year = $ExtendedFileProperties.Year
-
-    } #EndCustomObject
-#>
-$RawObject
-
-<#
-
-#>
-
-      # $Mp3Object = New-Object -PSObject -Property $hash
-
-      # return $Mp3Object
+      $CookedObject
+      
     } #EndForeach
   
   
