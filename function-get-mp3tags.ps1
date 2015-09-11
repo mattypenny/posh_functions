@@ -25,7 +25,7 @@ function Get-RawExtendedFileProperties
   
     $Files = Get-ChildItem $folder -recurse 
   
-    foreach( $file in "$Files" ) 
+    foreach( $file in $Files ) 
     {
   
       write-verbose "Get-RawExtendedFileProperties: Processing file $file"
@@ -105,7 +105,7 @@ function Get-CookedExtendedFileProperties
 
     $Files = Get-ChildItem $folder -recurse 
   
-    foreach( $file in "$Files" ) 
+    foreach( $file in $Files ) 
     {
   
       write-verbose "$MyInvocation.MyCommand.Name Processing file $file"
