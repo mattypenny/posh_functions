@@ -75,7 +75,7 @@ function Get-RawExtendedFileProperties
 .DESCRIPTION
 
 .EXAMPLE
-   Get-Mp3Properties -folder "D:\music\Desm*" -verbose
+   Get-CookedExtendedProperties -folder "D:\music\Desm*" -verbose
 
 .EXAMPLE
    Another example of how to use this cmdlet
@@ -103,7 +103,7 @@ function Get-CookedExtendedFileProperties
     foreach( $file in $Files ) 
     {
   
-      write-verbose "Get-CookedExtendedFileProperties: Processing file $file"
+      write-verbose "$MyInvocation.MyCommand.Name Processing file $file"
       $RawExtendedFileProperties = Get-RawExtendedFileProperties -folder $file
   
 
@@ -423,12 +423,94 @@ function Get-CookedExtendedFileProperties
 }
  
 
-# todo: function to just extract the mp3 stuff
-#
  
 
  
 
 # $X = Get-ExtendedFileProperties -folder "D:\music\Desm*" -verbose
 # $X | select Size, Album
+
+
+<#
+.Synopsis
+   Get extended properties depending on filetype
+.DESCRIPTION
+.EXAMPLE
+   Get-SelectedExtendedFileProperties -folder "D:\music\*Take*"
+.EXAMPLE
+   Another example of how to use this cmdlet
+#>
+function Get-SelectedExtendedFileProperties
+            
+{
+  [CmdletBinding()]
+  [Alias()]
+  Param( [string]$folder = "$pwd",
+         [string]$filetype = "default") 
+
+
+  Process
+  {
+
+    $Csv = import-csv ExtendedFileProperties.dat
+
+    $Files = Get-ChildItem $folder -recurse 
+  
+    foreach( $file in $Files ) 
+    {
+  
+      write-verbose "$MyInvocation.MyCommand.Name: Processing file $file"
+
+      [string]$Expression = "Get-CookedExtendedFileProperties -folder `"$file`" | "
+ 
+      $Expression = $Expression + "select "
+
+      foreach ($Prop in $($Csv | ? Usedfor -like "*Mp3*" )) 
+      {
+        write-debug "$`Prop.CookedName:  $Prop.CookedName"
+        $Expression = $Expression + $Prop.CookedName + ", "
+      }
+
+      $Expression = $Expression.substring(0, $Expression.length - 2 )
+
+      write-debug "`$Expression $Expression"
+
+      invoke-expression $Expression
+
+    }
+
+  }
+      
+
+<#
+$Csv = import-csv ExtendedFileProperties.dat
+$Csv | gm
+$Csv | ? USedfor -like "*mp3*" | select PowershellName
+$Csv | ? USedfor -like "*mp3*" | out-string
+$Csv | ? USedfor -like "*mp3*" | format-table @{Expression = "PowershellName" + ","}
+$Csv | ? USedfor -like "*mp3*" | format-table @{Expression = $_.PowershellName + ","}
+$Csv | ? USedfor -like "*mp3*" | format-table @{Expression = {$_.PowershellName + ","}}
+$String = $Csv | ? USedfor -like "*mp3*" | format-table @{Expression = {$_.PowershellName + ","}}
+$String
+#foreach ($Prop in $($Csv | ? Usedfor -like "*Mp3*" )) {$X = $X + $Prop.PowershellName + ","}
+[string]$X="select "
+foreach ($Prop in $($Csv | ? Usedfor -like "*Mp3*" )) {$X = $X + $Prop.PowershellName + ","}
+$X
+$X = $X.substring(0, $X.length)
+$X
+$X = $X.substring(0, $X.length -1 )
+$X
+#>
+
+
+  
+
+  
+  End
+  {
+  }
+}
+ 
+
+
 # vim: set softtabstop=2 shiftwidth=2 expandtab
