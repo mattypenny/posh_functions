@@ -45,14 +45,7 @@ function Get-RawExtendedFileProperties
         if ($name -ne "")
         {
           Add-Member -InputObject $RawFileProperties -MemberType NoteProperty -Name $name.replace(" ","") -value "$value"
-          write-debug "Adding Member -Name $name -value $value"
-
-          #
-          # if not in array
-          # then
-          #   write to errorlog file
-          #
-
+          # write-debug "Adding Member -Name $name -value $value"
         }
       }
 
@@ -96,8 +89,20 @@ function Get-CookedExtendedFileProperties
   {
 
     # Todo: Need to remember/work out how to pass switches betwwen functions i.e. -verbose and -recurse
-  
-  
+
+    $Expression = "`$CookedObject = [PSCustomObject]@{ "
+
+    $Csv = import-csv ExtendedFileProperties.dat | ? Usedfor -like "*Mp3*"
+    foreach ($r in $Csv ) 
+    { 
+      $Expression = $Expression + $r.CookedName + " = `$RawExtendedFileProperties.`"" + $r.RawName + "`"" + "`n"
+      write-debug "`$Expression: $Expression"
+    }
+
+    $Expression = $Expression.substring(0, $Expression.length - 1 )
+    $Expression = $Expression + "}"
+
+
     $Files = Get-ChildItem $folder -recurse 
   
     foreach( $file in $Files ) 
@@ -106,7 +111,9 @@ function Get-CookedExtendedFileProperties
       write-verbose "$MyInvocation.MyCommand.Name Processing file $file"
       $RawExtendedFileProperties = Get-RawExtendedFileProperties -folder $file
   
-
+      write-debug "`$Expression: $Expression"
+      invoke-expression $Expression
+<#
       $CookedObject = [PSCustomObject]@{ 
         SequenceNumber = $RawExtendedFileProperties."#"
         ThirtyFiveMmFocalLength  = $RawExtendedFileProperties."35mmFocalLength"
@@ -410,7 +417,7 @@ function Get-CookedExtendedFileProperties
         Year = $RawExtendedFileProperties.Year
       
       } #EndCustomObject
-
+#>
       $CookedObject
       
     } #EndForeach
