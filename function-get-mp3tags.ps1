@@ -42,7 +42,8 @@ function Get-RawExtendedFileProperties
   
         $value = $directoryObject.GetDetailsOf( $fileObject, $index )
   
-        if ($name -ne "")
+        # For some reason it *seems* both 141 and 142 are 'status'
+        if ($name -ne "" -and $index -ne 142)
         {
           Add-Member -InputObject $RawFileProperties -MemberType NoteProperty -Name $name.replace(" ","") -value "$value"
           write-verbose "Adding Member -Name $name -value $value. Index is $index"
