@@ -45,7 +45,7 @@ function Get-RawExtendedFileProperties
         if ($name -ne "")
         {
           Add-Member -InputObject $RawFileProperties -MemberType NoteProperty -Name $name.replace(" ","") -value "$value"
-          # write-debug "Adding Member -Name $name -value $value"
+          write-verbose "Adding Member -Name $name -value $value. Index is $index"
         }
       }
 
@@ -103,7 +103,7 @@ function Get-CookedExtendedFileProperties
     $Expression = $Expression + "}"
 
 
-    $Files = Get-ChildItem $folder -recurse 
+    $Files = Get-ChildItem "$folder" -recurse 
   
     foreach( $file in $Files ) 
     {
@@ -157,7 +157,7 @@ function Get-SelectedExtendedFileProperties
 
     $Csv = import-csv ExtendedFileProperties.dat
 
-    $Files = Get-ChildItem $folder -recurse 
+    $Files = Get-ChildItem "$folder" -recurse 
   
     foreach( $file in $Files ) 
     {
