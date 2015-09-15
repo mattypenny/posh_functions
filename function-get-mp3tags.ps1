@@ -150,7 +150,7 @@ function Get-SelectedExtendedFileProperties
   [CmdletBinding()]
   [Alias()]
   Param( [string]$folder = "$pwd",
-         [string]$filetype = "default") 
+         [string]$filetype = "mp3") 
 
 
   Process
@@ -169,7 +169,7 @@ function Get-SelectedExtendedFileProperties
  
       $Expression = $Expression + "select "
 
-      foreach ($Prop in $($Csv | ? Usedfor -like "*Mp3*" )) 
+      foreach ($Prop in $($Csv | ? Usedfor -like "*~$filetype~*" )) 
       {
         write-debug "$`Prop.CookedName:  $Prop.CookedName"
         $Expression = $Expression + $Prop.CookedName + ", "

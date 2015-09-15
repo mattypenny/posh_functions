@@ -1,10 +1,10 @@
 CookedName,RawName,UsedFor
-SequenceNumber,"#",mp3~~~~~~
+SequenceNumber,"#",~mp3~~~~~~
 ThirtyFiveMmFocalLength ,"35mmFocalLength",~jpg~~~~~
 AccountName ,AccountName  ,~~~~~~
-Album,Album  ,mp3~~~~~~
-AlbumArtist,AlbumArtist  ,mp3~~~~~~
-AlbumID,AlbumID  ,mp3~~~~~~
+Album,Album  ,~mp3~~~~~~
+AlbumArtist,AlbumArtist  ,~mp3~~~~~~
+AlbumID,AlbumID  ,~mp3~~~~~~
 Anniversary,Anniversary,~~Contact~~~~
 AssistantsName,"Assistant'sName",~~Contact~~~~
 AssistantsPhone,"Assistant'sPhone",~~Contact~~~~
@@ -15,19 +15,19 @@ Autosummary,Autosummary,~~~~~~
 Availability,Availability,~~Contact~~~~
 Bcc,Bcc,~~~~Email~~
 BccAddresses,BccAddresses,~~~~Email~~
-BeatsPerMinute,"Beats-per-minute",mp3~~~~~~
+BeatsPerMinute,"Beats-per-minute",~mp3~~~~~~
 BillingInformation,BillingInformation,~~Contact~~~~
 Birthday,Birthday,~~Contact~~~~
-BitDepth,BitDepth,mp3~~~~~~
-BitRate,BitRate,mp3~~~~~~
+BitDepth,BitDepth,~mp3~~~~~~
+BitRate,BitRate,~mp3~~~~~~
 BroadcastDate,BroadcastDate,~~~~~tv~
 BusinessAddress,BusinessAddress,~~Contact~~~~
 BusinessCity,BusinessCity,~~Contact~~~~
 BusinessCountryOrRegion,"BusinessCountry/Region",~~Contact~~~~
 BusinessCountyOrRegion,"BusinessCounty/Region",~~Contact~~~~
-BusinessFa,xBusinessFa,x~~Contact~~~~
+BusinessFax,BusinessFax,~~Contact~~~~
 BusinessHomepage,BusinessHomepage,~~Contact~~~~
-BusinessPOBo,x"BusinessP.O.Box",~~Contact~~~~
+BusinessPOBox,"BusinessP.O.Box",~~Contact~~~~
 BusinessPhone,BusinessPhone,~~Contact~~~~
 BusinessPostcode,BusinessPostcode,~~Contact~~~~
 BusinessStreet,BusinessStreet,~~Contact~~~~
@@ -50,15 +50,15 @@ Comments,Comments,~~~General~~~
 Company,Company,~~Contact~~~~
 CompanyMainphone,CompanyMainphone,~~Contact~~~~
 Complete,Complete,~~~General~~~
-Composers,Composers,mp3~~~~~~
+Composers,Composers,~mp3~~~~~~
 Computer,Computer,~~~General~~~
-Conductors,Conductors,mp3~~~~~~
+Conductors,Conductors,~mp3~~~~~~
 Connected,Connected,~~Contact~~~~
 ContactNames,ContactNames,~~Contact~~~~
 ContentCreated,ContentCreated,~~~General~~~
 ContentStatus,ContentStatus,~~~General~~~
 ContentType,ContentType,~~~General~~~
-ContributingArtists,ContributingArtists,mp3~~~~~~
+ContributingArtists,ContributingArtists,~mp3~~~~~~
 Contributors,Contributors,~~~General~~~
 ConversationID,ConversationID,~~~~~~
 Copyright,Copyright,~~~General~~~
@@ -142,8 +142,8 @@ HomeAddress,HomeAddress,~~Contact~~~~
 HomeCity,HomeCity,~~Contact~~~~
 HomeCountryOrRegion,"HomeCountry/region",~~Contact~~~~
 HomeCountyOrRegion,"HomeCounty/region",~~Contact~~~~
-HomeFa,xHomeFa,x~~Contact~~~~
-HomePoBo,x"HomeP.o.Box",~~Contact~~~~
+HomeFax,HomeFax,~~Contact~~~~
+HomePoBox,"HomeP.o.Box",~~Contact~~~~
 HomePhone,HomePhone,~~Contact~~~~
 HomePostcode,HomePostcode,~~Contact~~~~
 HomeStreet,HomeStreet,~~Contact~~~~
@@ -197,18 +197,18 @@ OtherAddress,OtherAddress,~~Contact~~~~
 OtherCity,OtherCity,~~Contact~~~~
 OtherCountryOrRegion,"OtherCountry/Region",~~Contact~~~~
 OtherCountyOrRegion,"OtherCounty/Region",~~Contact~~~~
-OtherPoBo,x"OtherP.o.Box",~~Contact~~~~
+OtherPoBox,"OtherP.o.Box",~~Contact~~~~
 OtherPostCode,OtherPostCode,~~Contact~~~~
 OtherStreet,OtherStreet,~~Contact~~~~
 Owner,Owner,~~~General~~~
-PoBo,x"P.O.box",~~Contact~~~~
+PoBox,"P.O.box",~~Contact~~~~
 Pager,Pager,~~Contact~~~~
 Pages,Pages,~~~General~~~
 Paired,Paired,~~~General~~~
 ParentalRating,ParentalRating,~~~~~tv~
 ParentalRatingReason,ParentalRatingReason,~~~~~tv~
 Participants,Participants,~~~~~~task
-PartOfACompilation,PartOfACompilation,mp3~~~~~~
+PartOfACompilation,PartOfACompilation,~mp3~~~~~~
 PartOfSet,PartOfSet,~~~General~~~
 Path,Path,~~~General~~~
 People,People,~~~General~~~
@@ -270,19 +270,19 @@ Street,Street,~~Contact~~~~
 Subject,Subject,~~~~Email~~
 SubjectDistance,SubjectDistance,~~~~~~
 Subtitle,Subtitle,~~~~~tv~
-Suffi,xSuffi,x~~~General~~~
+Suffix,Suffix,~~~General~~~
 Summary,Summary,~~~General~~~
 SupportLink,SupportLink,~~Contact~~~~
 Surname,Surname,~~Contact~~~~
 Tags,Tags,~~~General~~~
 TaskOwner,TaskOwner,~~~~~~task
 TaskStatus,TaskStatus,~~~~~~task
-Tele,xTele,x~~Contact~~~~
+Telex,Telex,~~Contact~~~~
 Title,Title,~~Contact~~~~
 To,To,~~~~Email~~
 ToAddresses,ToAddresses,~~~~Email~~
 TodoTitle,TodoTitle,~~~~~~task
-TotalBitRate,TotalBitRate,mp3~~~~~~
+TotalBitRate,TotalBitRate,~mp3~~~~~~
 TotalEditingTime,TotalEditingTime,~~~~~~
 TotalFileSize,TotalFileSize,~~~General~~~
 TotalSize,TotalSize,~~~General~~~
@@ -298,4 +298,4 @@ WhiteBalance,WhiteBalance,~jpg~~~~~
 Width,Width,~~~General~~~
 WordCount,WordCount,~~~General~~~
 Writers,Writers,~~~General~~~
-Year,Year,mp3~~~~~~
+Year,Year,~mp3~~~~~~
