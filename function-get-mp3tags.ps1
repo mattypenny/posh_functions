@@ -79,7 +79,8 @@ function Get-CookedExtendedFileProperties
 {
   [CmdletBinding()]
   [Alias()]
-  Param( [string]$folder = "$pwd" ) 
+  Param( [string]$folder = "$pwd",
+         [string]$filetype = "mp3") 
 
   Begin
   {
@@ -93,23 +94,23 @@ function Get-CookedExtendedFileProperties
 
     $Expression = "`$CookedObject = [PSCustomObject]@{ "
 
-    $Csv = import-csv ExtendedFileProperties.dat | ? Usedfor -like "*Mp3*"
+    $Csv = import-csv ExtendedFileProperties.dat | ? Usedfor -like "*`~$filetype`~*" 
     foreach ($r in $Csv ) 
     { 
       $Expression = $Expression + $r.CookedName + " = `$RawExtendedFileProperties.`"" + $r.RawName + "`"" + "`n"
-      write-debug "`$Expression: $Expression"
     }
 
     $Expression = $Expression.substring(0, $Expression.length - 1 )
     $Expression = $Expression + "}"
 
+    write-debug "`$Expression: $Expression"
 
     $Files = Get-ChildItem "$folder" -recurse 
   
     foreach( $file in $Files ) 
     {
   
-      write-verbose "$MyInvocation.MyCommand.Name Processing file $file"
+      write-verbose "Processing `$file $file"
       $RawExtendedFileProperties = Get-RawExtendedFileProperties -folder $file
   
       write-debug "`$Expression: $Expression"
@@ -117,7 +118,7 @@ function Get-CookedExtendedFileProperties
 
       $CookedObject
       
-    } #EndForeach
+    } 
   
   
   }
@@ -130,9 +131,6 @@ function Get-CookedExtendedFileProperties
  
 
  
-
-# $X = Get-ExtendedFileProperties -folder "D:\music\Desm*" -verbose
-# $X | select Size, Album
 
 
 <#
@@ -156,7 +154,21 @@ function Get-SelectedExtendedFileProperties
   Process
   {
 
+    # todo: seperate this bit out into get-SelectExpression
     $Csv = import-csv ExtendedFileProperties.dat
+
+    $SelectExpression = "select "
+
+    foreach ($Prop in $($Csv | ? Usedfor -like "*`~$filetype`~*" )) 
+    {
+      write-debug "$`Prop.CookedName:  $Prop.CookedName"
+      $SelectExpression = $SelectExpression + $Prop.CookedName + ", "
+    }
+
+    $SelectExpression = $SelectExpression.substring(0, $SelectExpression.length - 2 )
+
+    write-verbose "The Select `$Expression $SelectExpression"
+
 
     $Files = Get-ChildItem "$folder" -recurse 
   
@@ -167,17 +179,8 @@ function Get-SelectedExtendedFileProperties
 
       [string]$Expression = "Get-CookedExtendedFileProperties -folder `"$file`" | "
  
-      $Expression = $Expression + "select "
-
-      foreach ($Prop in $($Csv | ? Usedfor -like "*~$filetype~*" )) 
-      {
-        write-debug "$`Prop.CookedName:  $Prop.CookedName"
-        $Expression = $Expression + $Prop.CookedName + ", "
-      }
-
-      $Expression = $Expression.substring(0, $Expression.length - 2 )
-
-      write-debug "`$Expression $Expression"
+      
+      $Expression = $Expression + $SelectExpression
 
       invoke-expression $Expression
 
