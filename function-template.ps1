@@ -1,3 +1,4 @@
+function get-template { 
 <#
 .SYNOPSIS
   One-line description
@@ -5,8 +6,8 @@
 .DESCRIPTION
   Longer description
 
-.PARAMETER
-
+.PARAMETER folder
+  Folder 
 
 .EXAMPLE
   Example of how to use this cmdlet
@@ -14,26 +15,18 @@
 .EXAMPLE
   Another example of how to use this cmdlet
 #>
-function get-template { 
-{
   [CmdletBinding()]
-  [Alias()]
-  Param( [string]$folder = "$pwd" ) 
+  Param( [string][Alias ("f")]$folder = "$pwd"  ) 
 
-  Begin
-  {
-  }
+  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
 
-  Process
-  {
-  }
 
-  End
-  {
-  }
+
+  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+
 }
-}
-set-alias aliasname get-template
+
+set-alias temp get-template
 
 
 <#
