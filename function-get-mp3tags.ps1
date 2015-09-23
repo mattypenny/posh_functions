@@ -19,12 +19,14 @@ function Get-RawExtendedFileProperties
 
   Process
   {
-
+    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+    write-debug "`$folder: $folder"
     $shellObject = New-Object -ComObject Shell.Application
   
   
-    $Files = Get-ChildItem $folder -recurse 
+    $Files = Get-ChildItem "$folder" -recurse 
   
+    write-verbose "Got files $($Files | measure-object).count"
     foreach( $file in $Files ) 
     {
   
@@ -51,6 +53,7 @@ function Get-RawExtendedFileProperties
       }
 
     return $RawFileProperties
+    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
   
 
     }
@@ -89,6 +92,8 @@ function Get-CookedExtendedFileProperties
 
   Process
   {
+    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+    
 
     # Todo: Need to remember/work out how to pass switches betwwen functions i.e. -verbose and -recurse
 
@@ -103,24 +108,26 @@ function Get-CookedExtendedFileProperties
     $Expression = $Expression.substring(0, $Expression.length - 1 )
     $Expression = $Expression + "}"
 
-    write-debug "`$Expression: $Expression"
+    # write-debug "`$Expression: $Expression"
 
     $Files = Get-ChildItem "$folder" -recurse 
   
     foreach( $file in $Files ) 
     {
   
-      write-verbose "Processing `$file $file"
+      write-debug "Foreach loop: `$file $file"
+      write-verbose "Processing $file"
       $RawExtendedFileProperties = Get-RawExtendedFileProperties -folder $file
   
-      write-debug "`$Expression: $Expression"
       invoke-expression $Expression
 
       $CookedObject
       
     } 
   
-  
+    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+    
+     
   }
   End
   {
@@ -136,7 +143,9 @@ function Get-CookedExtendedFileProperties
 <#
 .Synopsis
    Get extended properties depending on filetype
+
 .DESCRIPTION
+  Todo: use this select  @{E={$_.sequencenumber};L='No.'}, title, bitrate, ContributingArtists, Genre, Size, Comments | ft -a
 .EXAMPLE
    Get-SelectedExtendedFileProperties -folder "D:\music\*Take*"
 .EXAMPLE
