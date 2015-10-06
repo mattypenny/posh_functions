@@ -36,9 +36,16 @@ Online list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
 
 #>
 	
-	Param( [String] $P_Match_String)
+	Param( [String] $P_Match_String,
+         [String] $ShowBuiltins = $False,
+         [String] $Display = "Multi",
+         [Int][Alias ("Col", "Columns", "c")] $DesiredColumns = 4,
+         [Int]$AliasWidth = 8,
+         [int]$DefinitionWidth = 20)
 
-  $BUILTIN_ALIASES = @( `
+  if ($ShowBuiltins -eq $False)
+  {
+    $BUILTIN_ALIASES = @( `
     "%", # ForEach-Object
     "?", # Where-Object
     "ac", # Add-Content
@@ -176,10 +183,50 @@ Online list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
     "where", # Where-Object
     "wjb", # Wait-Job
     "write") # Write-Output
+  }
+  else
+  {
+    $BUILTIN_ALIASES = @( )
+  }
   
-  get-alias | where { $BUILTIN_ALIASES -notcontains $_.name } |
+  $Aliases = get-alias | where { $BUILTIN_ALIASES -notcontains $_.name } |
     select name, definition |
     sort name
+
+  # Todo: essentially, the columns and rows are going in the wrong direction!
+  if ($Display -eq "Multi")
+  {
+
+    $CountColumns =0
+    foreach ($O in $Aliases) 
+    {
+  
+      $CountColumns++
+
+      [string]$Alias = $O.Name
+      [string]$Definition = $O.Definition
+
+      [int]$ThisAliasWidth = [math]::min($AliasWidth, $Alias.length) 
+      [int]$ThisDefinitionWidth = [math]::min($DefinitionWidth, $Definition.length) 
+
+      write-debug "`$Alias: $Alias `$ThisAliasWidth: $ThisAliasWidth "
+      write-debug "`$Definition: $Definition `$ThisDefinitionWidth: $ThisDefinitionWidth"
+
+      [string]$PrintString = "{0,-$AliasWidth} {1,-$DefinitionWidth}     " -f $Alias.Substring(0, $ThisAliasWidth), $Definition.Substring(0, $ThisDefinitionWidth)
+  
+      write-host -NoNewline $PrintString
+  
+      if ($CountColumns -ge $DesiredColumns)
+      {
+        write-host ""
+        $CountColumns = 0
+      }
+    }
+  }
+  else
+  {
+    $Aliases
+  }
 
 }
 set-alias salias show-alias

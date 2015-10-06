@@ -67,12 +67,12 @@ function Get-RawExtendedFileProperties
 
 <#
 .SYNOPSIS
-   Short description
+   Get file attributes as a Powershell-friendly object
 
 .DESCRIPTION
 
 .EXAMPLE
-   Get-CookedExtendedProperties -folder "D:\music\Desm*" -verbose
+   Get-CookedExtendedFileProperties -folder "D:\music\Desm*" -verbose
 
 .EXAMPLE
    Another example of how to use this cmdlet
@@ -145,86 +145,26 @@ function Get-CookedExtendedFileProperties
    Get extended properties depending on filetype
 
 .DESCRIPTION
-  Todo: use this select  @{E={$_.sequencenumber};L='No.'}, title, bitrate, ContributingArtists, Genre, Size, Comments | ft -a
+  Todo: use this select  
 .EXAMPLE
    Get-SelectedExtendedFileProperties -folder "D:\music\*Take*"
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Get-SelectedExtendedFileProperties
+function show-Mp3Properties
             
 {
   [CmdletBinding()]
   [Alias()]
-  Param( [string]$folder = "$pwd",
-         [string]$filetype = "mp3") 
+  Param( [string]$folder = "d:\music",
+         [string]$filetype = "mp3",
+         [Alias ("o") $object) 
 
 
-  Process
-  {
-
-    # todo: seperate this bit out into get-SelectExpression
-    $Csv = import-csv ExtendedFileProperties.dat
-
-    $SelectExpression = "select "
-
-    foreach ($Prop in $($Csv | ? Usedfor -like "*`~$filetype`~*" )) 
-    {
-      write-debug "$`Prop.CookedName:  $Prop.CookedName"
-      $SelectExpression = $SelectExpression + $Prop.CookedName + ", "
-    }
-
-    $SelectExpression = $SelectExpression.substring(0, $SelectExpression.length - 2 )
-
-    write-verbose "The Select `$Expression $SelectExpression"
-
-
-    $Files = Get-ChildItem "$folder" -recurse 
-  
-    foreach( $file in $Files ) 
-    {
-  
-      write-verbose "$MyInvocation.MyCommand.Name: Processing file $file"
-
-      [string]$Expression = "Get-CookedExtendedFileProperties -folder `"$file`" | "
- 
-      
-      $Expression = $Expression + $SelectExpression
-
-      invoke-expression $Expression
-
-    }
-
-  }
-      
-
-<#
-$Csv = import-csv ExtendedFileProperties.dat
-$Csv | gm
-$Csv | ? USedfor -like "*mp3*" | select PowershellName
-$Csv | ? USedfor -like "*mp3*" | out-string
-$Csv | ? USedfor -like "*mp3*" | format-table @{Expression = "PowershellName" + ","}
-$Csv | ? USedfor -like "*mp3*" | format-table @{Expression = $_.PowershellName + ","}
-$Csv | ? USedfor -like "*mp3*" | format-table @{Expression = {$_.PowershellName + ","}}
-$String = $Csv | ? USedfor -like "*mp3*" | format-table @{Expression = {$_.PowershellName + ","}}
-$String
-#foreach ($Prop in $($Csv | ? Usedfor -like "*Mp3*" )) {$X = $X + $Prop.PowershellName + ","}
-[string]$X="select "
-foreach ($Prop in $($Csv | ? Usedfor -like "*Mp3*" )) {$X = $X + $Prop.PowershellName + ","}
-$X
-$X = $X.substring(0, $X.length)
-$X
-$X = $X.substring(0, $X.length -1 )
-$X
-#>
-
-
-  
-
-  
-  End
-  {
-  }
+  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  Get-CookedExtendedFileProperties -folder "$folder" | select @{E={$_.sequencenumber};L='No.'}, title, bitrate, ContributingArtists, Genre, Size, Comments | ft -a
+  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+   
 }
  
 
