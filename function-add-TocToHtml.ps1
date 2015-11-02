@@ -1,13 +1,23 @@
 function add-TocToHtml { 
 <#
 .SYNOPSIS
-  One-line description
+  Reads in an html page, writes out an html page with a table of contents
 
 .DESCRIPTION
-  Longer description
+  Todo: parameterize what headings are toc-ed
+  Todo: make it work with headings other than <h3>
+  Todo: indent the toc depending on the heading level
+  Todo: create the toc with a specified font size
+  Todo: add-in a go back to the top link before each heading, optionally
+  Todo: add in an offset parameter for lines you want to keep at the top
+  Todo: some error-handling would be both nice and novel
 
-.PARAMETER folder
-  Folder 
+.PARAMETER InputFile
+  File containing the html to which you want to add a TOC
+
+.PARAMETER OutputFile
+  File to which to write the TOC-ed html
+  Enter the word 'Screen' to have it output to the screen, or pipeline
 
 .EXAMPLE
   Example of how to use this cmdlet
@@ -20,6 +30,9 @@ function add-TocToHtml {
          [string][Alias ("o")]$OutputFile = "c:\temp\post_with_Toc.html") 
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+
+  write-debug "`$InputFile: $InputFile"
+  write-debug "`$OutputFile: $OutputFile"
 
   $InputText = get-content $InputFile
 
@@ -36,7 +49,7 @@ function add-TocToHtml {
       $Anchor = $Title.replace(" ", "")
       write-debug "`$Anchor: $Anchor"
 
-      $OutputLine = "<h3 id=`"$Anchor`">$Title</h3><br>`n"
+      $OutputLine = "`n`n<h3 id=`"$Anchor`">$Title</h3><br>`n"
       write-debug "`$OutputLine: $OutputLine"
 
       $OutputText = $OutputText + $OutputLine
@@ -48,15 +61,23 @@ function add-TocToHtml {
     } 
     else 
     {
-      $OutputText = $OutputText + $Line
+      if ($Line -ne "")
+      {
+        $OutputText = $OutputText + $Line + "<br>`n"
+      }
     }
   }
 
-  $OutputText
-  $TocText
-
-  $TocText | out-file $OutputFile
-  $OutputText | out-file -append $OutputFile
+  if ($OutputFile -ne "Screen")
+  {
+    $TocText | out-file $OutputFile
+    $OutputText | out-file -append $OutputFile
+  }
+  else
+  {
+    $TocText
+    $OutputText
+  }
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
 
