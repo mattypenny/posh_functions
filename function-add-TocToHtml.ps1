@@ -19,6 +19,9 @@ function add-TocToHtml {
   File to which to write the TOC-ed html
   Enter the word 'Screen' to have it output to the screen, or pipeline
 
+.PARAMETER Offset
+  Number of lines at the top of the html to leave 'as they are' before the TOC insert
+
 .EXAMPLE
   Example of how to use this cmdlet
 
@@ -27,14 +30,24 @@ function add-TocToHtml {
 #>
   [CmdletBinding()]
   Param( [string][Alias ("i")]$InputFile = "c:\temp\post.html",
-         [string][Alias ("o")]$OutputFile = "c:\temp\post_with_Toc.html") 
+         [string][Alias ("o")]$OutputFile = "c:\temp\post_with_Toc.html",
+         [int][Alias ("off")]$Offset = 3 
+) 
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
 
   write-debug "`$InputFile: $InputFile"
   write-debug "`$OutputFile: $OutputFile"
+  write-debug "`$Offset: $Offset"
 
-  $InputText = get-content $InputFile
+  # Save the text that comes before the TOC into $OffSetText
+  $OffSetText = get-content -head $Offset $InputFile
+
+  # Save the text that comes after the TOC into $InputText
+  $LineCount = get-content $InputFile | measure-object
+  $AfterOffset = $LineCount.count - $Offset
+  $InputText = get-content $InputFile -tail $AfterOffset
+r
 
   $OutputText = ""
   $TocText = ""
@@ -70,11 +83,13 @@ function add-TocToHtml {
 
   if ($OutputFile -ne "Screen")
   {
-    $TocText | out-file $OutputFile
+    $OffsetText | out-file $OutputFile
+    $TocText | out-file -append $OutputFile
     $OutputText | out-file -append $OutputFile
   }
   else
   {
+    $OffSetText
     $TocText
     $OutputText
   }
