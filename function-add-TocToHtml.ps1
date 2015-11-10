@@ -4,13 +4,17 @@ function add-TocToHtml {
   Reads in an html page, writes out an html page with a table of contents
 
 .DESCRIPTION
+
+  Todo list
+
   Todo: parameterize what headings are toc-ed
   Todo: make it work with headings other than <h3>
   Todo: indent the toc depending on the heading level
   Todo: create the toc with a specified font size
   Todo: add-in a go back to the top link before each heading, optionally
-  Todo: add in an offset parameter for lines you want to keep at the top
+  Done: add in an offset parameter for lines you want to keep at the top
   Todo: some error-handling would be both nice and novel
+  Todo: ignore a previously created TOC
 
 .PARAMETER InputFile
   File containing the html to which you want to add a TOC
@@ -22,6 +26,13 @@ function add-TocToHtml {
 .PARAMETER Offset
   Number of lines at the top of the html to leave 'as they are' before the TOC insert
 
+.PARAMETER TextToInsertIntoTocLink
+  This is a string that will be injected into each html link which makes up the TOC. 
+  
+  The script will then ignore these lines if and when it ever rebuilds the TOC for the same webpage.
+
+  I wouldn't anticipate that I would often use anything other than the default of 'ThisIsATocLine'
+
 .EXAMPLE
   Example of how to use this cmdlet
 
@@ -31,7 +42,8 @@ function add-TocToHtml {
   [CmdletBinding()]
   Param( [string][Alias ("i")]$InputFile = "c:\temp\post.html",
          [string][Alias ("o")]$OutputFile = "c:\temp\post_with_Toc.html",
-         [int][Alias ("off")]$Offset = 3 
+         [int][Alias ("off")]$Offset = 3,
+         [string]$TextToInsertIntoTocLink = "ThisIsATocLine"
 ) 
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
@@ -40,14 +52,19 @@ function add-TocToHtml {
   write-debug "`$OutputFile: $OutputFile"
   write-debug "`$Offset: $Offset"
 
+  # first step 
+  # first read file, but throw away old TOC`dd
+  $AllText = get-content $InputFile | ? line -notlike $TextToInsertIntoTocLink
+
   # Save the text that comes before the TOC into $OffSetText
-  $OffSetText = get-content -head $Offset $InputFile
+  $OffSetText = $AllText[0..$Offset]
 
   # Save the text that comes after the TOC into $InputText
-  $LineCount = get-content $InputFile | measure-object
-  $AfterOffset = $LineCount.count - $Offset
-  $InputText = get-content $InputFile -tail $AfterOffset
-r
+  $LineCount = $AllText | measure-object
+  # $AfterOffset = $LineCount.count - $Offset
+  $InputText = $AllText[$Offset..$LineCount.count]
+
+
 
   $OutputText = ""
   $TocText = ""
@@ -67,7 +84,7 @@ r
 
       $OutputText = $OutputText + $OutputLine
       
-      $TocLine = "<a href=`"`#$Anchor`">$Title</a><br>`n"
+      $TocLine = "<a ThisIsATocLine href=`"`#$Anchor`">$Title</a><br>`n"
       write-debug "`$TocLine: $TocLine"
 
       $TocText = $TocText + $TocLine
