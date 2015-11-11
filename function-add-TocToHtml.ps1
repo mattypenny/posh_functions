@@ -42,7 +42,7 @@ function add-TocToHtml {
   [CmdletBinding()]
   Param( [string][Alias ("i")]$InputFile = "c:\temp\post.html",
          [string][Alias ("o")]$OutputFile = "c:\temp\post_with_Toc.html",
-         [int][Alias ("off")]$Offset = 3,
+         [int][Alias ("off")]$Offset = 4,
          [string]$TextToInsertIntoTocLink = "ThisIsATocLine"
 ) 
 
@@ -54,10 +54,16 @@ function add-TocToHtml {
 
   # first step 
   # first read file, but throw away old TOC`dd
-  $AllText = get-content $InputFile | ? line -notlike $TextToInsertIntoTocLink
-
+  $AllText = select-string -notmatch  "$TextToInsertIntoTocLink" $InputFile
+ 
   # Save the text that comes before the TOC into $OffSetText
-  $OffSetText = $AllText[0..$Offset]
+  $OffSetLines = $AllText[0..$Offset]
+  [string]$OffSetText = ""
+  foreach ($LineObject in $OffSetLines) 
+  {
+    [string]$Line = $LineObject.line
+    $OffsetText = $OffsetText + $Line + "<br>" 
+  }
 
   # Save the text that comes after the TOC into $InputText
   $LineCount = $AllText | measure-object
@@ -69,8 +75,9 @@ function add-TocToHtml {
   $OutputText = ""
   $TocText = ""
    
-  foreach ($Line in $InputText) 
+  foreach ($LineObject in $InputText) 
   {
+    $Line = $LineObject.line
     if ($Line -like "*h3*") 
     { 
       $Title = $Line.Split("<>")[2] 
@@ -84,7 +91,7 @@ function add-TocToHtml {
 
       $OutputText = $OutputText + $OutputLine
       
-      $TocLine = "<a ThisIsATocLine href=`"`#$Anchor`">$Title</a><br>`n"
+      $TocLine = "<a $TextToInsertIntoTocLink href=`"`#$Anchor`">$Title</a><br>`n"
       write-debug "`$TocLine: $TocLine"
 
       $TocText = $TocText + $TocLine
