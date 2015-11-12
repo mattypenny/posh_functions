@@ -23,7 +23,7 @@ function add-TocToHtml {
   File to which to write the TOC-ed html
   Enter the word 'Screen' to have it output to the screen, or pipeline
 
-.PARAMETER Offset
+.PARAMETER NumberOfIntroductoryLines
   Number of lines at the top of the html to leave 'as they are' before the TOC insert
 
 .PARAMETER TextToInsertIntoTocLink
@@ -42,7 +42,7 @@ function add-TocToHtml {
   [CmdletBinding()]
   Param( [string][Alias ("i")]$InputFile = "c:\temp\post.html",
          [string][Alias ("o")]$OutputFile = "c:\temp\post_with_Toc.html",
-         [int][Alias ("off")]$Offset = 4,
+         [int][Alias ("off")]$NumberOfIntroductoryLines = 4,
          [string]$TextToInsertIntoTocLink = "ThisIsATocLine"
 ) 
 
@@ -50,25 +50,27 @@ function add-TocToHtml {
 
   write-debug "`$InputFile: $InputFile"
   write-debug "`$OutputFile: $OutputFile"
-  write-debug "`$Offset: $Offset"
+  write-debug "`$NumberOfIntroductoryLines: $NumberOfIntroductoryLines"
 
   # first step 
   # first read file, but throw away old TOC`dd
   $AllText = select-string -notmatch  "$TextToInsertIntoTocLink" $InputFile
  
-  # Save the text that comes before the TOC into $OffSetText
-  $OffSetLines = $AllText[0..$Offset]
-  [string]$OffSetText = ""
-  foreach ($LineObject in $OffSetLines) 
+  # Save the text that comes before the TOC into $IntroductoryText
+  $IntroductoryLines = $AllText[0..$NumberOfIntroductoryLines]
+  [string]$IntroductoryText = ""
+  foreach ($LineObject in $IntroductoryLines) 
   {
     [string]$Line = $LineObject.line
-    $OffsetText = $OffsetText + $Line + "<br>" 
+    $IntroductoryText = $IntroductoryText + $Line + "<br>" 
   }
 
+  # Remove the last <br>
+  $IntroductoryText.substring(0,$IntroductoryText.length -4)
+  
   # Save the text that comes after the TOC into $InputText
   $LineCount = $AllText | measure-object
-  # $AfterOffset = $LineCount.count - $Offset
-  $InputText = $AllText[$Offset..$LineCount.count]
+  $InputText = $AllText[$NumberOfIntroductoryLines..$LineCount.count]
 
 
 
@@ -107,13 +109,13 @@ function add-TocToHtml {
 
   if ($OutputFile -ne "Screen")
   {
-    $OffsetText | out-file $OutputFile
+    $IntroductoryText | out-file $OutputFile
     $TocText | out-file -append $OutputFile
     $OutputText | out-file -append $OutputFile
   }
   else
   {
-    $OffSetText
+    $IntroductoryText
     $TocText
     $OutputText
   }
