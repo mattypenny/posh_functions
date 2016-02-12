@@ -18,7 +18,7 @@ function  convert-wpPostToHugo{
 
 #>
   [CmdletBinding()]
-  Param( [string][Alias ("xml")]$WordpressXML = "$wp_xml",
+  Param( [xml][Alias ("xml")]$WordpressXML = "$wp_xml",
          [string][Alias ("string")]$PostString = "ramone" ,
          [string][Alias ("f")]$ContentFolder = "c:\temp"
 ) 
@@ -26,18 +26,19 @@ function  convert-wpPostToHugo{
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
 
-  $MatchingWordPressPosts = get-wpPostMetaData -WordPressXml $WordPressXML -PostString $Poststring
+  $MatchingWordPressPosts = get-wpMatchingWordpressPosts -WordPressXml $WordPressXML -PostString $Poststring
 
   foreach ($WordPressPost in $MatchingWordPressPosts)
   { 
-  
-    [String]$HugoFileName = get-wpHugoFileName -WordPressPost $WordPressPost -ContentFolder $contentFolder
-    write-debug "`$HugoFileName: $HugoFileName"
 
-    [String]$HugoFrontMatter = get-wpHugoFrontMatterAsString -WordPressPost $WordPressPost
-    write-debug "`$HugoFrontMatter: $HugoFrontMatter"
+    [String]$HugoFileName = get-wpHugoFileName -WordPressPostAsXML $WordPressPost -ContentFolder $contentFolder
+    write-verbose "`$HugoFileName: $HugoFileName"
 
-    [String]$HugoContent = get-wpPostContentAsString -WordPressPost $WordPressPost
+    $WordPressPost
+    [String]$HugoFrontMatter = get-wpHugoFrontMatterAsString -WordPressPostAsXML $WordPressPost
+    write-verbose "`$HugoFrontMatter: $HugoFrontMatter"
+
+    # [String]$HugoContent = get-wpPostContentAsString -WordPressPost $WordPressPost
 
     if ($ConvertFootnotes)
     {
@@ -71,10 +72,10 @@ vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 #>
 
 
-function get-wpPostMetadata { 
+function get-wpMatchingWordpressPosts { 
 <#
 .SYNOPSIS
-  Get Metadata
+  Get Matching Wordpress posts
 
 .DESCRIPTION
 
@@ -86,9 +87,7 @@ function get-wpPostMetadata {
   The wordpress content imported into an xml variable
 
 .EXAMPLE
-  Example of how to use this cmdlet
-
-get-WordpressPostMetadata -poststring moberly | where-object post_type -eq 'post' 
+  get-WordpressPostMetadata -poststring moberly | where-object post_type -eq 'post' 
 
 title          : Moberly Road, Salisbury
 link           : http://salisburyandstonehenge.net/streetnames/moberly-road-salisbury
@@ -115,58 +114,25 @@ comment        : {wp:comment, wp:comment, wp:comment, wp:comment...}
 
 #>
   [CmdletBinding()]
-  Param( [string][Alias ("xml")]$WordpressXML = "$wp_xml",
+  Param( [xml][Alias ("xml")]$WordpressXML = "$wp_xml",
          [string][Alias ("string")]$PostString = "ramone"         ) 
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
 
-<#
-select-xml -xml $wp_xml -xpath "//channel/item" | 
-  select -expandproperty node | 
-  where post_type -ne "attachment" |
-  where title -like "*January*" | 
-  select -ExpandProperty encoded | fl
-#>
-
-# [xml]$wp_xml = get-content wp_exp.xml
-$Nodes = select-xml -xml $wp_xml -xpath "//channel/item" | select -expandproperty node | where-object title -like "*$PostString*"
-
-foreach ($Node in $Nodes)
-{
-  $attachmenturl  = $Node.attachment_url
-  $commentstatus  = $Node.comment_status
-  $creator        = $Node.creator       
-  $description    = $Node.description   
-  $encoded        = $Node.encoded       
-  $guid           = $Node.guid          
-  $issticky       = $Node.is_sticky     
-  $link           = $Node.link          
-  $menuorder      = $Node.menu_order    
-  $pingstatus     = $Node.ping_status   
-  $postmeta       = $Node.postmeta      
-  $postdate       = $Node.post_date     
-  $postdategmt    = $Node.post_date_gmt 
-  $postid         = $Node.post_id       
-  $postname       = $Node.post_name     
-  $postparent     = $Node.post_parent   
-  $postpassword   = $Node.post_password 
-  $posttype       = $Node.post_type     
-  $pubDate        = $Node.pubDate       
-  $status         = $Node.status        
-  $title          = $Node.title   
-
-  <# I Need to work out how much of the above stuff I can retain and how much of it I can put in the front matter. 
-  It would be great to be able to keep it 'for a rainy day'
-
-  The other big-ish puzzle is whether there's any chance of maintaining the same URLs for all the content.
-
-  Or, alternatively, creating re-directs for everything. I'm not sure given that I haven't got _loads_ of backlinks that that's 
-  worth worrying about tbh. Although quite a lot from twitter etc
+  <#
+    select-xml -xml $wp_xml -xpath "//channel/item" | 
+    select -expandproperty node | 
+    where post_type -ne "attachment" |
+    where title -like "*January*" | 
+    select -ExpandProperty encoded | fl
   #>
-  
-  $node
 
-}
+  # [xml]$wp_xml = get-content wp_exp.xml
+  $Nodes = select-xml -xml $WordpressXML -xpath "//channel/item" | select -expandproperty node | where-object title -like "*$PostString*"
+
+  
+  $nodes
+
 
 
 
@@ -175,7 +141,6 @@ foreach ($Node in $Nodes)
 
 }
 
-set-alias temp get-template
 
 
 function get-wpHugoFileName { 
@@ -200,28 +165,20 @@ function get-wpHugoFileName {
   Another example of how to use this cmdlet
 #>
   [CmdletBinding()]
-  Param( [xml][Alias ("x")]$WordpressPostAsXml    
+  Param( [system.xml.xmlelement][Alias ("x")]$WordpressPostAsXml,
          [string][Alias ("f")]$ContentFolder = "c:\temp" )
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
   
-  [string]$postname       = $Node.post_name     
+  [string]$postname       = $WordpressPostAsXml.post_name     
   write-debug "`$postname: $postname"
 
-  [string]$FileName = $ContentFolder + '\' + $postname
+  [string]$FileName = $ContentFolder + '\' + $postname + '.md'
   write-debug "`$Filename: $Filename"
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
 
 }
-
-set-alias temp get-template
-
-
-<#
-vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-#>
-
 
 
 function get-wpHugoFrontMatterAsString { 
@@ -230,7 +187,44 @@ function get-wpHugoFrontMatterAsString {
   One-line description
 
 .DESCRIPTION
-  Longer description
+  This is from the help for the Hugo front matter:
+
+  Required variables
+    title           - As it appears on screen   
+    description     - not sure how this is used
+    date            - for sorting
+    taxonomies      - These will use the field name of the plural form of the index ??
+
+  Optional variables
+    aliases         - An array of one or more aliases (e.g. old published path of a renamed content) that would be created to redirect to this content. 
+    draft           - If true, the content will not be rendered unless hugo is called with --buildDrafts
+    publishdate     - If in the future, content will not be rendered unless hugo is called with --buildFuture
+    type            - ?? The type of the content (will be derived from the directory automatically if unset)
+    isCJKLanguage   - If true, explicitly treat the content as CJKLanguage ??
+    weight          - Used for sorting
+    markup          - (Experimental) Specify "rst" for reStructuredText (requires rst2html) or "md" (default) for Markdown
+    slug            - The token to appear in the tail of the URL, or
+    url             - The full path to the content from the web root. If neither slug or url is present, the filename will be used.
+
+  YAML example
+    ---
+    title: "spf13-vim 3.0 release and new website"
+    description: "spf13-vim is a cross platform distribution of vim plugins and resources for Vim."
+    tags: [ ".vimrc", "plugins", "spf13-vim", "vim" ]
+    lastmod: 2015-12-23
+    date: "2012-04-06"
+    categories:
+      - "Development"
+      - "VIM"
+    slug: "spf13-vim-3-0-release-and-new-website"
+    ---
+
+    Content of the file goes Here
+
+
+
+  Todo: decide whether to use the front matter for anything else e.g. todo
+
 
 .PARAMETER folder
   Folder 
@@ -242,17 +236,99 @@ function get-wpHugoFrontMatterAsString {
   Another example of how to use this cmdlet
 #>
   [CmdletBinding()]
-  Param( [xml][Alias ("x")]$WordpressPostAsXml   ) 
+  Param( [system.xml.xmlelement][Alias ("x")]$WordpressPostAsXml   ) 
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  write-debug "Hello"
+  $WordPressPostAsXML
+  write-debug "Hello"
+  <#
+  title          : Moberly Road, Salisbury
+  link           : http://salisburyandstonehenge.net/streetnames/moberly-road-salisbury
+  pubDate        : Sat, 01 Aug 2009 20:27:56 +0000
+  creator        : creator
+  guid           : guid
+  description    : 
+  encoded        : {content:encoded, excerpt:encoded}
+  post_id        : 1149
+  post_date      : 2009-08-01 20:27:56
+  post_date_gmt  : 2009-08-01 20:27:56
+  comment_status : open
+  ping_status    : open
+  post_name      : moberly-road-salisbury
+  status         : publish
+  post_parent    : 0
+  menu_order     : 0
+  post_type      : post
+  post_password  : 
+  is_sticky      : 0
+  category       : {category, category, category, category...}
+  postmeta       : {wp:postmeta, wp:postmeta, wp:postmeta, wp:postmeta...}
+  comment        : {wp:comment, wp:comment, wp:comment, wp:comment...}
+  #>
 
 
+  $attachmenturl  = $WordpressPostAsXml.attachment_url
+  $commentstatus  = $WordpressPostAsXml.comment_status
+  $creator        = $WordpressPostAsXml.creator       
+  $description    = $WordpressPostAsXml.description   
+  $encoded        = $WordpressPostAsXml.encoded       
+  $guid           = $WordpressPostAsXml.guid          
+  $issticky       = $WordpressPostAsXml.is_sticky     
+  $link           = $WordpressPostAsXml.link          
+  $menuorder      = $WordpressPostAsXml.menu_order    
+  $pingstatus     = $WordpressPostAsXml.ping_status   
+  $postmeta       = $WordpressPostAsXml.postmeta      
+  $postdate       = $WordpressPostAsXml.post_date     
+  $postdategmt    = $WordpressPostAsXml.post_date_gmt 
+  $postid         = $WordpressPostAsXml.post_id       
+  $postname       = $WordpressPostAsXml.post_name     
+  $postparent     = $WordpressPostAsXml.post_parent   
+  $postpassword   = $WordpressPostAsXml.post_password 
+  $posttype       = $WordpressPostAsXml.post_type     
+  $pubDate        = $WordpressPostAsXml.pubDate       
+  $status         = $WordpressPostAsXml.status        
+  $title          = $WordpressPostAsXml.title   
+
+  $Tags = $WordPressPostAsXml | select category | select -ExpandProperty category | 
+            ? domain -eq 'post_tag' | select nicename 
+            select nicename 
+
+  [string]$TagString = ""
+  foreach ($T in $Tags)
+  {
+    write-debug "`$Tag: $Tag"
+    [string]$Tag = $T.nicename
+    $TagString = "$Tagstring `"$Tag`", "  
+  }
+  write-debug "`$TagString: $Tagstring"
+
+  $YamlString = @"
+  title: "$title"
+  tags: [$tagstring]
+  description: "$description"
+  lastmod: "$(get-date -format "yyyy\-MM\-dd")"
+  date: "$(postdate.Substring(0,10))"
+  tags: [ $tagstring ]
+  categories:
+      - "$($($link.split('/'))[3])"
+  aliases: ["$link"]
+  draft: ??  
+  publishdate: "$postdate"
+  type: ??
+  weight: ??
+  markup: "md"
+  url: $($link.replace('http://salisburyandstonehenge.net',''))
+"@
+ 
+  write-debug "`$YamlString: 
+    $YamlString"
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+  # return $YamlString
 
 }
 
-set-alias temp get-template
 
 
 <#
@@ -364,12 +440,8 @@ function convert-WordpressWordpressTableToMarkdownTable  {
 
 }
 
-set-alias temp get-template
 
 
-<#
-vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-#>
 
 
 
@@ -403,12 +475,8 @@ function get-wpLinks {
 
 }
 
-set-alias temp get-template
 
 
-<#
-vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-#>
 
 
 
