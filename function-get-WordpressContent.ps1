@@ -303,6 +303,18 @@ function get-wpHugoFrontMatterAsString {
   }
   write-debug "`$TagString: $Tagstring"
 
+  # my blog had the category as the second element of the URL i.e.
+  # http://salisburyandstonehenge/onthisday/Beatles-play-the-City-Hall
+  [string]$category = $($link.split('/'))[3]
+
+  # This function is pretty specific to http://salisburyandstonehenge.net!
+  if ($category -eq 'onthisday')
+  {
+    $weight = get-wpHugoWeightFromWpURL ($link)
+  }
+
+  # using all the available metadata, except 'type' as I'm not having different types
+  # of content
   $YamlString = @"
   title: "$title"
   tags: [$tagstring]
@@ -311,11 +323,10 @@ function get-wpHugoFrontMatterAsString {
   date: "$(postdate.Substring(0,10))"
   tags: [ $tagstring ]
   categories:
-      - "$($($link.split('/'))[3])"
+      - "$category"
   aliases: ["$link"]
   draft: ??  
   publishdate: "$postdate"
-  type: ??
   weight: ??
   markup: "md"
   url: $($link.replace('http://salisburyandstonehenge.net',''))
@@ -336,6 +347,42 @@ vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 #>
 
 
+function get-wpHugoWeightFromWpURL { 
+<#
+.SYNOPSIS
+  Derives the Hugo 'weight' metadata from a URL which has a date at the start of the title
+
+.DESCRIPTION
+  My Wordpress blog had a series of 'on this day' pages. The pages were in the 
+  format:
+
+  'http://whatever/whatever/3rd-May-1998-whatever' or
+  
+  'http://whatever/whatever/3rd-May-whatever'
+
+  In Wordpress I the used ?? to order the pages within a list of the 'on this day'
+  pages. The ?? had a number in the format MMDD.
+
+  As far as I can see, this ?? field isn't included in the XML export, so this 
+  function is re-deriving it from the title.
+
+.PARAMETER WordPressURL
+  The URL of the post
+
+.EXAMPLE
+  Example of how to use this cmdlet
+#>
+  [CmdletBinding()]
+  Param( [string][Alias ("url")]$WordpressUrl   ) 
+
+  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+
+  write-debug "`$WordPressUrl: $WordpressURL"
+
+
+  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+
+}
 
 function get-wpPostContentAsString { 
 <#
