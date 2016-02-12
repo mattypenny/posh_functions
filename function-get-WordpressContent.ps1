@@ -304,11 +304,11 @@ function get-wpHugoFrontMatterAsString {
   write-debug "`$TagString: $Tagstring"
 
   # my blog had the category as the second element of the URL i.e.
-  # http://salisburyandstonehenge/onthisday/Beatles-play-the-City-Hall
+  # http://salisburyandstonehenge/on-this-day/Beatles-play-the-City-Hall
   [string]$category = $($link.split('/'))[3]
 
   # This function is pretty specific to http://salisburyandstonehenge.net!
-  if ($category -eq 'onthisday')
+  if ($category -eq 'on-this-day')
   {
     $weight = get-wpHugoWeightFromWpURL ($link)
   }
@@ -320,7 +320,7 @@ function get-wpHugoFrontMatterAsString {
   tags: [$tagstring]
   description: "$description"
   lastmod: "$(get-date -format "yyyy\-MM\-dd")"
-  date: "$(postdate.Substring(0,10))"
+  date: "$($postdate.Substring(0,10))"
   tags: [ $tagstring ]
   categories:
       - "$category"
@@ -376,9 +376,26 @@ function get-wpHugoWeightFromWpURL {
   Param( [string][Alias ("url")]$WordpressUrl   ) 
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
-
   write-debug "`$WordPressUrl: $WordpressURL"
 
+  $URLAsArray = $WordPressURL.split('/')
+  
+  [int]$NumberOfElements = $URLAsArray.length
+  write-debug "`$NumberOfElements: $NumberOfElements"
+  
+  [string]$UrlBasename = $URLAsArray[$URLAsArray.length - 1 ]
+  write-debug "`$UrlBaseName: $UrlBaseName"
+
+  $UrlBaseNameAsArray = $UrlBaseName.split('-')
+
+  $DayOfMonth = $UrlBaseNameAsArray[0]
+
+  $Month = $UrlBaseNameAsArray[1]
+
+  $3rdElement = $UrlBaseNameAsArray[2]
+  
+  write-debug "`$DayOfMonth `$Month `$3rdElement: $DayOfMonth $Month $3rdElement" 
+  return $URLBaseName
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
 
