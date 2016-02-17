@@ -1,5 +1,5 @@
 
-function  convert-wpPostToHugo{ 
+function  convert-wpToHugo{ 
 <#
 .SYNOPSIS
   One-line description
@@ -13,6 +13,13 @@ function  convert-wpPostToHugo{
 .PARAMETER PostString
   The wordpress content imported into an xml variable
 
+.PARAMETER PostType
+  The type as returned from WordPress, which in my install is one of:`
+    attachment   
+    nav_menu_item
+    page         
+    post      
+
 .EXAMPLE
   Example of how to use this cmdlet
 
@@ -20,51 +27,61 @@ function  convert-wpPostToHugo{
   [CmdletBinding()]
   Param( [xml][Alias ("xml")]$WordpressXML = "$wp_xml",
          [string][Alias ("string")]$PostString = "ramone" ,
-         [string][Alias ("f")]$ContentFolder = "c:\temp"
+         [string][Alias ("f")]$ContentFolder = "D:\hugo\sites\example.com\content",
+         [string][Alias ("type")]$PostType = "post"
 ) 
 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  write-startfunction $MyInvocation
 
-  $MatchingWordPressPosts = get-wpMatchingWordpressPosts -WordPressXml $WordPressXML -PostString $Poststring
+  $MatchingWordPressPosts = get-wpMatchingWordpressPosts -WordPressXml $WordPressXML -PostString $Poststring -type $PostType
 
   foreach ($WordPressPost in $MatchingWordPressPosts)
   { 
 
     [String]$HugoFileName = get-wpHugoFileName -WordPressPostAsXML $WordPressPost -ContentFolder $contentFolder
-    write-verbose "`$HugoFileName: $HugoFileName"
+    write-debug "`$HugoFileName: $HugoFileName"
+    [string]$WordPressLink = $WordPressPost.link
+    write-verbose "Converting $WordPressLink to $HugoFilename"
 
-    $WordPressPost
+    
     [String]$HugoFrontMatter = get-wpHugoFrontMatterAsString -WordPressPostAsXML $WordPressPost
-    write-verbose "`$HugoFrontMatter: $HugoFrontMatter"
+    write-debug "`$HugoFrontMatter: $HugoFrontMatter"
 
-    # [String]$HugoContent = get-wpPostContentAsString -WordPressPost $WordPressPost
+    [String]$PostText = get-wpPostContentAsString -WordPressPostAsXML $WordPressPost
 
     if ($ConvertFootnotes)
     {
-      $HugoContent = convert-WordpressFootnotesToInternalLinks -Content $HugoContent
+      $PostText = convert-WordpressFootnotesToInternalLinks -Content $HugoContent
     }
 
     if ($ConvertWordpressTableToMarkdownTable)
     {
-      $HugoContent = convert-WordpressWordpressTableToMarkdownTable -Content $HugoContent
+      $PostText = convert-WordpressWordpressTableToMarkdownTable -Content $HugoContent
     }
 
     if ($FlagLink)
     {
-      $Links = get-wpLinks $HugoContent
+      $Links = get-wpLinks $PostText
     }
 
-    # Todo: process for file already exists
-    # Todo: process for file not writeable
+    # Todo: if file exists back it up?
+    
+    [string]$HugoPostString = @"
+---
+$HugoFrontMatter
+---
+$PostText
+"@
+                          
+    write-debug "out-file -InputObject $HugoPostString -FilePath $HugoFileName"
+    out-file -InputObject $HugoPostString -FilePath $HugoFileName -encoding default
 
-
-    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+    write-endfunction $MyInvocation
 
   }
 
 }
-set-alias temp get-template
 
 
 <#
@@ -115,9 +132,10 @@ comment        : {wp:comment, wp:comment, wp:comment, wp:comment...}
 #>
   [CmdletBinding()]
   Param( [xml][Alias ("xml")]$WordpressXML = "$wp_xml",
-         [string][Alias ("string")]$PostString = "ramone"         ) 
+         [string][Alias ("string")]$PostString = "ramone",
+         [string][Alias ("Type")]$PostType = "post") 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  
 
   <#
     select-xml -xml $wp_xml -xpath "//channel/item" | 
@@ -128,16 +146,12 @@ comment        : {wp:comment, wp:comment, wp:comment, wp:comment...}
   #>
 
   # [xml]$wp_xml = get-content wp_exp.xml
-  $Nodes = select-xml -xml $WordpressXML -xpath "//channel/item" | select -expandproperty node | where-object title -like "*$PostString*"
+  $Nodes = select-xml -xml $WordpressXML -xpath "//channel/item" | select -expandproperty node | where-object title -like "*$PostString*" | where-object post_type -eq $PostType
 
   
   $nodes
 
-
-
-
-
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+  write-endfunction $MyInvocation
 
 }
 
@@ -168,15 +182,20 @@ function get-wpHugoFileName {
   Param( [system.xml.xmlelement][Alias ("x")]$WordpressPostAsXml,
          [string][Alias ("f")]$ContentFolder = "c:\temp" )
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  write-startfunction $MyInvocation
   
   [string]$postname       = $WordpressPostAsXml.post_name     
   write-debug "`$postname: $postname"
 
-  [string]$FileName = $ContentFolder + '\' + $postname + '.md'
+  [string]$link = $WordpressPostAsXml.link     
+  [string]$category = $($link.split('/'))[3]
+  write-debug "`$Category: $Category"
+
+  [string]$FileName = $ContentFolder + '\' + $Category + '\' + $postname + '.md'
   write-debug "`$Filename: $Filename"
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+  write-endfunction $MyInvocation
+  return $Filename
 
 }
 
@@ -238,10 +257,7 @@ function get-wpHugoFrontMatterAsString {
   [CmdletBinding()]
   Param( [system.xml.xmlelement][Alias ("x")]$WordpressPostAsXml   ) 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
-  write-debug "Hello"
-  $WordPressPostAsXML
-  write-debug "Hello"
+  write-startfunction $MyInvocation
   <#
   title          : Moberly Road, Salisbury
   link           : http://salisburyandstonehenge.net/streetnames/moberly-road-salisbury
@@ -313,38 +329,41 @@ function get-wpHugoFrontMatterAsString {
     $weight = get-wpHugoWeightFromWpURL ($link)
   }
 
+  # the alias has to be a relative address
+  $LinkAsArray = $link.split('/')
+  $DomainName = "$LinkAsArray[0]//$LinkAsArray[2]"
+  $Alias = $Link.replace($DomainName, '')
+  write-debug "`$Alias: $Alias"
+
+  [string]$category = $($link.split('/'))[3]
+  
+
   # using all the available metadata, except 'type' as I'm not having different types
   # of content
   $YamlString = @"
-  title: "$title"
-  tags: [$tagstring]
-  description: "$description"
-  lastmod: "$(get-date -format "yyyy\-MM\-dd")"
-  date: "$($postdate.Substring(0,10))"
-  tags: [ $tagstring ]
-  categories:
-      - "$category"
-  aliases: ["$link"]
-  draft: ??  
-  publishdate: "$postdate"
-  weight: ??
-  markup: "md"
-  url: $($link.replace('http://salisburyandstonehenge.net',''))
+title: "$titleh
+description: "$description"
+lastmod: "$(get-date -format "yyyy\-MM\-dd")"
+date: "$($postdate.Substring(0,10))"
+tags: [ $tagstring ]
+categories:
+- "$category"
+aliases: ["$Alias"]
+draft: No
+publishdate: "$postdate"
+weight: 0
+markup: "md"
+url: $Alias
 "@
  
-  write-debug "`$YamlString: 
-    $YamlString"
+  # write-debug "`$YamlString: $YamlString"
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
-  # return $YamlString
+  write-endfunction $MyInvocation
+  return $YamlString
 
 }
 
 
-
-<#
-vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-#>
 
 
 function get-wpHugoWeightFromWpURL { 
@@ -370,12 +389,19 @@ function get-wpHugoWeightFromWpURL {
   The URL of the post
 
 .EXAMPLE
-  Example of how to use this cmdlet
+  get-wpHugoWeightFromWpURL http://salisburyandstonehenge.net/on-this-day/april/1st-april-1899-the-automobile-club-visit-stonehenge
+  0401
+
+.EXAMPLE
+  For testing, this is good:
+
+  foreach ($L in get-wpMatchingWordpressPosts -x $WpXml -string "*" | where-object post_type -eq 'page' | select link) { $Link = $L.link ; "$(get-wpHugoWeightFromWpURL -url $Link) $Link"}
 #>
   [CmdletBinding()]
   Param( [string][Alias ("url")]$WordpressUrl   ) 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  write-startfunction $MyInvocation
+
   write-debug "`$WordPressUrl: $WordpressURL"
 
   $URLAsArray = $WordPressURL.split('/')
@@ -395,11 +421,90 @@ function get-wpHugoWeightFromWpURL {
   $3rdElement = $UrlBaseNameAsArray[2]
   
   write-debug "`$DayOfMonth `$Month `$3rdElement: $DayOfMonth $Month $3rdElement" 
-  return $URLBaseName
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+  $MonthAsNumber = convert-monthToNumberString ($month)
+  write-debug "`$MonthAsNumber: $MonthAsNumber"
+ 
+  $DayOfMonthAsNumber = $DayOfMonth.replace('r','')
+  $DayOfMonthAsNumber = $DayOfMonthAsNumber.replace('d','')
+  $DayOfMonthAsNumber = $DayOfMonthAsNumber.replace('s','')
+  $DayOfMonthAsNumber = $DayOfMonthAsNumber.replace('t','')
+  $DayOfMonthAsNumber = $DayOfMonthAsNumber.replace('h','')
+  $DayOfMonthAsNumber = $DayOfMonthAsNumber.replace('n','')
+  write-debug "`$DayOfMonthAsNumber: $DayOfMonthAsNumber"
+ 
+  if ($DayOfMonthAsNumber.length -lt 2)
+  {
+    $DayofMonthAsNumber = "0$DayOfMonthAsNumber"
+  }
+  write-debug "`$DayOfMonthAsNumber: $DayOfMonthAsNumber"
+  
+  [string]$Weight = "$MonthAsNumber$DayOfMonthAsNumber"
+  write-debug "`$Weight: $Weight"
+
+  write-endfunction $MyInvocation
+
+  return $Weight
 
 }
+
+function convert-monthToNumberString { 
+<#
+.SYNOPSIS
+  Converts month as word to month in number string
+
+.PARAMETER MonthAsWord
+  Either the full month or the abbreviation
+
+.EXAMPLE
+  convert-MonthToNumberString
+
+#>
+  [CmdletBinding()]
+  Param( [string][Alias ("m")]$MonthAsWord,
+         $ILoveYouYouDummy  ) 
+
+  write-startfunction $MyInvocation
+
+
+
+  write-debug "`$MonthAsWord: $MonthAsWord"
+
+  # tried to do this with switch -regex, but it didn't work
+  [string]$MonthAsNumber = switch ($MonthAsWord)
+  { 
+        "Jan" {"01"} 
+        "January" {"01"} 
+        "Feb" {"02"} 
+        "February" {"02"} 
+        "Mar" {"03"} 
+        "March" {"03"} 
+        "Apr" {"04"} 
+        "April" {"04"} 
+        "May" {"05"} 
+        "Jun" {"06"} 
+        "June" {"06"} 
+        "Jul" {"07"} 
+        "July" {"07"} 
+        "Aug" {"08"} 
+        "August" {"08"} 
+        "Sep" {"09"} 
+        "September" {"09"} 
+        "Oct" {"10"} 
+        "October" {"10"} 
+        "Nov" {"11"} 
+        "November" {"11"} 
+        "Dec" {"12"} 
+        "December" {"12"} 
+        default {"Couldnt match the month"}
+  }
+   
+
+  write-endfunction $MyInvocation
+  return $MonthAsNumber
+
+}
+
 
 function get-wpPostContentAsString { 
 <#
@@ -419,17 +524,27 @@ function get-wpPostContentAsString {
   Another example of how to use this cmdlet
 #>
   [CmdletBinding()]
-  Param( [xml][Alias ("x")]$WordpressPostAsXml   ) 
+  Param( [system.xml.xmlelement][Alias ("x")]$WordpressPostAsXml   ) 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  write-startfunction $MyInvocation
+
+  $Encoded = $WordpressPostAsXml | select -expandproperty encoded       
+  
+  write-debug "`$Encoded"
+  $Encoded
+
+  [string]$PostBody = $Encoded | select -expandproperty `#cdata-section 
+  write-debug "`$PostBody"
+  $PostBody
 
 
-
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+  write-endfunction $MyInvocation
+  return $PostBody
 
 }
 
-set-alias temp get-template
+
+
 
 
 <#
@@ -458,11 +573,11 @@ function convert-WordpressFootnotesToInternalLinks {
   [CmdletBinding()]
   Param( [string][Alias ("f")]$PostAsString = "$pwd"  ) 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  write-startfunction $MyInvocation
 
 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+  write-endfunction $MyInvocation
 
 }
 
@@ -496,11 +611,11 @@ function convert-WordpressWordpressTableToMarkdownTable  {
   [CmdletBinding()]
   Param( [string][Alias ("f")]$MarkdownPost = ""  ) 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  write-startfunction $MyInvocation
 
 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+  write-endfunction $MyInvocation
 
 }
 
@@ -530,23 +645,121 @@ function get-wpLinks {
   [CmdletBinding()]
   Param( [string][Alias ("h")]$HugoContent = ""  ) 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+  write-startfunction $MyInvocation
 
 
 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+  write-endfunction $MyInvocation
 
 }
 
+function write-startfunction { 
+<#
+.SYNOPSIS
+  Marks start of function in logfile or debug output
+
+.DESCRIPTION
+  Gets parameteres back out of MyInvocation
+
+.PARAMETER CallingFunctionInvocation
+  $MyInvocation
+
+.EXAMPLE
+  write-startfunction $MyInvocation
+#>
+  [CmdletBinding()]
+  Param( [Alias ("i")]$CallingFunctionInvocation ) 
+
+  $CallDate = get-date -format 'hh:mm:ss.ffff' 
+  write-debug "$CallDate Function begin: $([string]$CallingFunctionInvocation.Line) "
+  return
+  write-output "`$PSBoundParameters"
+  
+  $PSBoundParameters
+
+  # nicked from https://clan8blog.wordpress.com/2014/06/27/listing-your-parameters/
+  <#
+  write-output "Clan8blog code"
+  ($CallingFunctionInvocation.MyCommand.BoundParameters ).Keys | ForEach 
+  {
+    if ( $boundParameters -notcontains $_ ) 
+    {
+      $val = (Get-Variable -Name $_ -EA SilentlyContinue).Value
+      if( $val.length -gt 0 ) 
+      {
+        "'$($_)' = '$($val)'"
+      }
+    }
+  }
+  #>
+  $BoundParameters = $CallingFunctionInvocation | select -expandProperty BoundParameters 
+
+  write-debug "$CallDate : `$BoundParameters:" 
+
+  foreach ($P in $boundParameters)
+  {
+    $ParameterCount = 0
+    $KeyArray = @{}
+    foreach ($K in $P.Keys)
+    {
+      $KeyArray[$ParameterCount] = $K
+      $ParameterCount = $ParameterCount + 1
+    }
+
+    $ParameterCount = 0
+    $ValueArray = @{}
+    foreach ($V in $P.values)
+    {
+      $ValueArray[$ParameterCount] = $V
+      $ParameterCount = $ParameterCount + 1
+    }
+
+  }
+
+  [string]$ParamString = ""
+  $count = 0
+  while ($count -le $ParameterCount)
+  {
+    $ParamString = "$ParamString  $KeyArray[$count] $ValueArray[$count]"
+    $count = $count + 1
+  }
+  write-debug "$CallDate Function rebuilt params: $ParamString"
+  write-debug "$CallDate End rebuilt params:"
+
+  
 
 
+  # write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
 
+}
 
+function write-endfunction { 
+<#
+.SYNOPSIS
+  Marks end of function in logfile or debug output
 
+.DESCRIPTION
+  Gets parameteres back out of MyInvocation
+
+.PARAMETER CallingFunctionInvocation
+  $MyInvocation
+
+.EXAMPLE
+  write-startfunction $MyInvocation
+#>
+  [CmdletBinding()]
+  Param( [Alias ("i")]$CallingFunctionInvocation ) 
+
+  $CallDate = get-date -format 'hh:mm:ss.ffff' 
+  write-debug "$CallDate Function end: $([string]$CallingFunctionInvocation.Line) "
+  return
+
+}
 
 <#
 vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab ignorecase
 #>
+
 
 
