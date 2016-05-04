@@ -12,10 +12,14 @@
 
    git add .gitignore function-convertto-twiki.ps1 function-edit-powershellref.ps1 function-get-gitaddcommand.ps1
 
+.EXAMPLE
+   Another example of how to use this cmdlet
 #>
 function Get-GitAddCommand
 {
     [CmdletBinding()]
+    [Alias()]
+    [OutputType([int])]
     Param
     (
         [Parameter(Position=0)]

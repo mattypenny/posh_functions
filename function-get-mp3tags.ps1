@@ -9,28 +9,70 @@
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Get-RawExtendedFileProperties
+function Get-ExtendedFileProperties
             
 {
   [CmdletBinding()]
   [Alias()]
   Param( [string]$folder = "$pwd" ) 
 
+  Begin
+  {
+    $CurrentlyKnownTags =
+      "Name",
+      "Size",
+      "Item type",
+      "Date modified",
+      "Date created",
+      "Date accessed",
+      "Attributes",
+      "Availability",
+      "Perceived type",
+      "Owner",
+      "Kind",
+      "Contributing artists",
+      "Album",
+      "Year",
+      "Genre",
+      "Rating",
+      "Authors",
+      "Title",
+      "Comments",
+      "#",
+      "Length",
+      "Bit rate",
+      "Protected",
+      "Total size",
+      "Computer",
+      "File extension",
+      "Filename",
+      "Space free",
+      "Shared",
+      "Folder name",
+      "Folder path",
+      "Folder",
+      "Path",
+      "Type",
+      "Link status",
+      "Space used",
+      "Sharing status"
+
+    write-verbose "$CurrentlyKnownTags $CurrentlyKnownTags"
+  }
+  
 
   Process
   {
-    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
-    write-debug "`$folder: $folder"
+
     $shellObject = New-Object -ComObject Shell.Application
   
   
-    $Files = Get-ChildItem "$folder" -recurse 
+    $Files = Get-ChildItem $folder -recurse 
   
-    write-verbose "Got files $($Files | measure-object).count"
     foreach( $file in $Files ) 
     {
   
-      write-verbose "Get-RawExtendedFileProperties: Processing file $file"
+      write-verbose "Processing file $file"
   
       $directoryObject = $shellObject.NameSpace( $file.Directory.FullName )
   
@@ -44,18 +86,22 @@ function Get-RawExtendedFileProperties
   
         $value = $directoryObject.GetDetailsOf( $fileObject, $index )
   
-        # For some reason it *seems* both 141 and 142 are 'status'
-        if ($name -ne "" -and $index -ne 142)
+        if ($name -ne "")
         {
           Add-Member -InputObject $RawFileProperties -MemberType NoteProperty -Name $name.replace(" ","") -value "$value"
-          write-verbose "Adding Member -Name $name -value $value. Index is $index"
+          write-debug "Adding Member -Name $name -value $value"
+
+          # todo: Check for unknown attributes (wull also check for atypical mp3 attributes). Logging both to some sort of error log
+          #
+          # if not in array
+          # then
+          #   write to errorlog file
+          #
         }
       }
 
     return $RawFileProperties
-    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
   
-
     }
   
   }
@@ -67,23 +113,24 @@ function Get-RawExtendedFileProperties
 
 <#
 .SYNOPSIS
-   Get file attributes as a Powershell-friendly object
+   Short description
 
 .DESCRIPTION
+   This code is based on Shaun Cassells Get-Mp3FilesLessThan which I found at:
+   http://myitforum.com/myitforumwp/2012/07/24/music-library-cleaning-with-powershell-identifying-old-mp3-files-with-low-bitrates/
 
 .EXAMPLE
-   Get-CookedExtendedFileProperties -folder "D:\music\Desm*" -verbose
+   Example of how to use this cmdlet
 
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Get-CookedExtendedFileProperties
+function Get-Mp3Poperties
             
 {
   [CmdletBinding()]
   [Alias()]
-  Param( [string]$folder = "$pwd",
-         [string]$filetype = "mp3") 
+  Param( [string]$folder = "$pwd" ) 
 
   Begin
   {
@@ -92,42 +139,24 @@ function Get-CookedExtendedFileProperties
 
   Process
   {
-    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
-    
 
     # Todo: Need to remember/work out how to pass switches betwwen functions i.e. -verbose and -recurse
-
-    $Expression = "`$CookedObject = [PSCustomObject]@{ "
-
-    $Csv = import-csv ExtendedFileProperties.dat | ? Usedfor -like "*`~$filetype`~*" 
-    foreach ($r in $Csv ) 
-    { 
-      $Expression = $Expression + $r.CookedName + " = `$RawExtendedFileProperties.`"" + $r.RawName + "`"" + "`n"
-    }
-
-    $Expression = $Expression.substring(0, $Expression.length - 1 )
-    $Expression = $Expression + "}"
-
-    # write-debug "`$Expression: $Expression"
-
-    $Files = Get-ChildItem "$folder" -recurse 
+    Get-ExtendedFileProperties -folder $folder
+  
+  
+    $Files = Get-ChildItem $folder -recurse 
   
     foreach( $file in $Files ) 
     {
   
-      write-debug "Foreach loop: `$file $file"
-      write-verbose "Processing $file"
-      $RawExtendedFileProperties = Get-RawExtendedFileProperties -folder $file
+      write-verbose "Processing file $file"
   
-      invoke-expression $Expression
+      $Mp3Object = New-Object -PSObject -Property @{}
 
-      $CookedObject
-      
-    } 
+      return $Mp3Object
   
-    write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
-    
-     
+    }
+  
   }
   End
   {
@@ -135,38 +164,12 @@ function Get-CookedExtendedFileProperties
 }
  
 
+# todo: function to just extract the mp3 stuff
+#
  
 
  
 
-
-<#
-.Synopsis
-   Get extended properties depending on filetype
-
-.DESCRIPTION
-  Todo: use this select  
-.EXAMPLE
-   Get-SelectedExtendedFileProperties -folder "D:\music\*Take*"
-.EXAMPLE
-   Another example of how to use this cmdlet
-#>
-function show-Mp3Properties
-            
-{
-  [CmdletBinding()]
-  [Alias()]
-  Param( [string]$folder = "d:\music",
-         [string]$filetype = "mp3",
-         [Alias ("o") $object) 
-
-
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
-  Get-CookedExtendedFileProperties -folder "$folder" | select @{E={$_.sequencenumber};L='No.'}, title, bitrate, ContributingArtists, Genre, Size, Comments | ft -a
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
-   
-}
- 
-
-
+$X = Get-ExtendedFileProperties -folder "D:\music\Desm*" -verbose
+$X | select Size, Album
 # vim: set softtabstop=2 shiftwidth=2 expandtab

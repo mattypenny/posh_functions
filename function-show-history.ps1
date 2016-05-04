@@ -2,7 +2,6 @@
 # show-history
 # ------------------------------
 
-
 <#
 .Synopsis
    Gets the history

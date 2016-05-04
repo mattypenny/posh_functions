@@ -1,3 +1,4 @@
+$QuickReferenceFolder = "c:\users\$($($Env:Username).trimend('2'))\Documents\QuickReference\"
 # ----------------------------------------------------------------------
 # Function: show-quickref
 #
@@ -6,7 +7,7 @@
 function show-quickref { 
 <#
 .SYNOPSIS
-Does a grep on \\ronnie\c$\users\matt\Documents\WindowsPowershell\quickref.txt 
+Does a grep on quickref files
 
 .DESCRIPTION
 
@@ -31,28 +32,35 @@ dir Sqlserver:\sql\$Computername\default\Jobserver\Jobs | ft @{Label ="Jobbie" ;
 #>
   [CmdletBinding()]	
 	Param( [String] $Pattern)
-  $QUICKREF = "$BaseDir\quickref.txt"
 
   if ($Pattern -ne $null)
   {
-    select-string -Pattern $Pattern -path $QUICKREF | select line | ft -wrap
+    select-string -Pattern $Pattern -path $QuickReferenceFolder\*.md | select line | ft -wrap
   }
   else
   {
-    gc $QUICKREF
+    gc $QuickReferenceFolder\*.md
   }
 
 
 }
 set-alias qr show-quickref
 
+function set-LocationToQuickReference {
+  cd $QuickReferenceFolder
+}
+set-alias cdqr set-LocationToQuickReference 
+
 function edit-quickref 
 <#
 Edit the quick reference document
 #>
-{ gvim "$BaseDir\\quickref.txt" }
+{ 
+  gvim "$QuickReferenceFolder\\unsorted.md" 
+}
 set-alias gqr edit-quickref
 set-alias eqr edit-quickref
+set-alias qrg edit-quickref
 
 <#
 vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab

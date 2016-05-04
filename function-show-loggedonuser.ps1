@@ -1,61 +1,145 @@
-# ----------------------------------------------------------------------
-# Function: aliasname - 
-#
-#           This function
-# ----------------------------------------------------------------------
 function get-loggedonuser { 
 <#
 .SYNOPSIS
-  Gets a list of users logged on to a specified server
-
+  Gets users logged on to a PC or server
 
 .DESCRIPTION
+  Gets users logged on to a PC or server
 
-
-
-.PARAMETER MyServer
-
-
+.PARAMETER $ComputerName
+  Can be a single PC or a list of PCs
 
 .INPUTS
 None. You cannot pipe objects to this function
 
 .EXAMPLE
+  get-loggedonuser PC11111
 
 .EXAMPLE
- 
+  get-loggedonuser server1
 
 .LINK
-Twiki list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
-
+  https://github.com/mattypenny/posh_functions
 
 #>
   [CmdletBinding()]	
-	Param( [String] $Computername)
+	Param( $ComputerName)
+
+  foreach ($C in $ComputerName)
+  {
+    foreach ($UserObject in $(Get-WmiObject Win32_LoggedOnUser -ComputerName $C |
+                              select pscomputername, antecedent | 
+                              ? antecedent -notlike "*SYSTEM*" |
+                              ? antecedent -notlike "*LOCAL SERVICE*" |
+                              ? antecedent -notlike "*NETWORK SERVICE*" |
+                              ? antecedent -notlike "*ANONYMOUS LOGON*" |
+			      sort -unique -property antecedent ))
+    {
+      [string]$ReturnComputerName = $UserObject.PSCOmputerName
+      [string]$Antecedent = $UserObject.Antecedent
+
+      $Antecedent = $($Antecedent -split "Name=`"")[1]
+
+      [PSCustomObject]@{
+			   ComputerName = $ReturnComputerName
+	                   Username = $Antecedent.trimend('"')
+                       }
 
 
-  $(Gwmi Win32_ComputerSystem -Comp $ComputerName).Username
-
+    }
+  
+  }
 }
 
 
-function show-loggedonuser {
+
+function show-loggedonuser { 
 <#
 .SYNOPSIS
-  Gets a list of users logged on to a specified server. No formatting, yet.
+  Gets users logged on to a PC or server
 
+.DESCRIPTION
+  Gets users logged on to a PC or server
 
+.PARAMETER $ComputerName
+  Can be a single PC or a list of PCs
+
+.INPUTS
+None. You cannot pipe objects to this function
+
+.EXAMPLE
+  show-loggedonuser PC11111
+
+.EXAMPLE
+  show-loggedonuser server1
+
+.LINK
+  https://github.com/mattypenny/posh_functions
+
+#>
   [CmdletBinding()]	
-	Param( [String] $Computername)
-  
-  get-loggedonuser $ComputerName
+	Param(  $Computername)
 
+  Get-LoggedOnUser $ComputerName | 
+    select pscomputername, antecedent | 
+    ? antecedent -notlike "*SYSTEM*" |
+    ? antecedent -notlike "*LOCAL SERVICE*" |
+    ? antecedent -notlike "*NETWORK SERVICE*" |
+    ? antecedent -notlike "*ANONYMOUS LOGON*" |
+    ft -AutoSize 
 }
 
 
-
+set-alias sloggedonuser show-loggedonuser
+set-alias gloggedonuser get-loggedonuser
 <#
 vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 #>
+
+
+function get-loggedonuserforsql { 
+<#
+.SYNOPSIS
+  Gets users logged on to a PC or server connected to specified sqlserver
+
+.DESCRIPTION
+  Gets users logged on to a PC or server connected to specified sqlserver
+
+.PARAMETER $ServerInstance
+  Can be a single Instance or a list
+
+.INPUTS
+None. You cannot pipe objects to this function
+
+.EXAMPLE
+  get-loggedonuserforsql yew\inst01
+
+  https://github.com/mattypenny/posh_functions
+
+#>
+  [CmdletBinding()]	
+	Param( $ServerInstance )
+
+  $Query = "select distinct host_name from sys.dm_exec_sessions
+            where host_name is not null"
+
+  foreach ($S in $ServerInstance)
+  {
+    $Computers = invoke-sqlcmd -ServerInstance $S -query $Query
+
+    foreach ($C in $Computers)
+    {
+      $ComputerName = $C.host_name
+      Get-WmiObject Win32_LoggedOnUser -ComputerName $ComputerName |
+          select pscomputername, antecedent | 
+          ? antecedent -notlike "*SYSTEM*" |
+          ? antecedent -notlike "*LOCAL SERVICE*" |
+          ? antecedent -notlike "*NETWORK SERVICE*" |
+          ? antecedent -notlike "*ANONYMOUS LOGON*" |
+          sort-object -property pscomputername, antecedent -unique
+
+    }
+  }
+}
 
 

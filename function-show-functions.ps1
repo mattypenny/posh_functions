@@ -51,3 +51,4 @@ function show-functionsinmemory {
 }
 set-alias sf2  show-functionsinmemory  
 set-alias sfm  show-functionsinmemory  
+

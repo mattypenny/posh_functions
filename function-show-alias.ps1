@@ -194,7 +194,7 @@ Online list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
     sort name
 
   # Todo: essentially, the columns and rows are going in the wrong direction!
-  if ($Display -eq "MultiSideways")
+  if ($Display -eq "Multi")
   {
 
     $CountColumns =0
@@ -202,41 +202,6 @@ Online list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
     {
   
       $CountColumns++
-
-      [string]$Alias = $O.Name
-      [string]$Definition = $O.Definition
-
-      [int]$ThisAliasWidth = [math]::min($AliasWidth, $Alias.length) 
-      [int]$ThisDefinitionWidth = [math]::min($DefinitionWidth, $Definition.length) 
-
-      write-debug "`$Alias: $Alias `$ThisAliasWidth: $ThisAliasWidth "
-      write-debug "`$Definition: $Definition `$ThisDefinitionWidth: $ThisDefinitionWidth"
-
-      [string]$PrintString = "{0,-$AliasWidth} {1,-$DefinitionWidth}     " -f $Alias.Substring(0, $ThisAliasWidth), $Definition.Substring(0, $ThisDefinitionWidth)
-  
-      write-host -NoNewline $PrintString
-  
-      if ($CountColumns -ge $DesiredColumns)
-      {
-        write-host ""
-        $CountColumns = 0
-      }
-    }
-  }
-  else if ($Display -eq "Multi")
-  {
-
-    $CountRows = 0
- 
-    $CountOfAliases = $($A | measure-object).count
-    
-    # until countrows * 3 > $CountOfAliases
-    #
-    # need to try this out with letters of the alphabet or something
-    # while ($val -ne 100) { $val++; "$val"}
-    {
-  
-      $CountRows++
 
       [string]$Alias = $O.Name
       [string]$Definition = $O.Definition

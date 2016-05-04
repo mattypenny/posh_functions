@@ -18,13 +18,12 @@ None. You cannot pipe objects to this function
 
 .EXAMPLE
 
-.LINK
-Online list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
-
 
 #>
+  [Alias ("gssj")]
   [CmdletBinding()]	
-	Param( [String] $ServerInstance = $Global:ServerInstance )
+	Param( [String] $ServerInstance = $Global:ServerInstance ,
+         [String][Alias ("include","job","jobname")] $filter = "*")
 
   if ($ServerInstance.IndexOf("\") -eq -1 )
   { 
@@ -34,7 +33,8 @@ Online list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
   dir  Sqlserver:\sql\$ServerInstance\Jobserver\Jobs |
     foreach {$_.refresh() }
 
-  dir Sqlserver:\sql\$ServerInstance\Jobserver\Jobs 
+  dir Sqlserver:\sql\$ServerInstance\Jobserver\Jobs | 
+    where-object name -like "*$filter*"
 }
 
 

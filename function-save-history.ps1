@@ -8,6 +8,7 @@ function save-history {
 
 #>
     
-  history -count 1000 | select EndExecutionTime, ExecutionStatus, CommandLine | fl | out-string -width 512  >> \\$RepositoryServer\c$\users\matt\Documents\WindowsPowershell\history\history.txt }
+  history -count 1000 | select EndExecutionTime, ExecutionStatus, CommandLine | fl | out-string -width 512  >> \\$RepositoryServer\d$\dbawork\matt\history\history.txt
+}
 set-alias shh save-history
 

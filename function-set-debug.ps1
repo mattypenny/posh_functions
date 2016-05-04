@@ -29,10 +29,6 @@ db on - as above
 .EXAMPLE
 db - turns it off
 
-.LINK
-Online list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
-
-
 #>
 
   [CmdletBinding()]

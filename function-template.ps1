@@ -1,36 +1,32 @@
 function get-template { 
 <#
 .SYNOPSIS
-  One-line description
-
+    One-line description
 .DESCRIPTION
-  Longer description
-
-.PARAMETER folder
-  Folder 
+    Longer description
+.PARAMETER
 
 .EXAMPLE
-  Example of how to use this cmdlet
+    Example of how to use this cmdlet
 
 .EXAMPLE
-  Another example of how to use this cmdlet
+    Another example of how to use this cmdlet
 #>
-  [CmdletBinding()]
-  Param( [string][Alias ("f")]$folder = "$pwd"  ) 
+    [CmdletBinding()]
+    Param( [string][Alias ("f")]$folder = "$pwd"  ) 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
+    write-startfunction
 
 
 
-  write-debug "$(get-date -format 'hh:mm:ss.ffff') Function end: $([string]$MyInvocation.Line) "
+    write-endfunction
 
 }
 
 set-alias temp get-template
 
-
 <#
-vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+vim: tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 #>
 
 

@@ -2,18 +2,24 @@
 # Function: sql - Run a query against a specified database
 # ----------------------------------------------------------------------
 
-function run-sql { Param ( [String] $MyServer, [String] $Query )
+function run-sql { Param ( [String] $ServerInstance, [String] $Query ,
+  [String][Alias ("d", "db", "dbname", "DatabaseName")] $Database = "master",
+  [String][Alias ("f")] $File = "No_file_supplied")
 
 write-debug $Query
 if ("$Query" -like "ss*")
 {
     $Query = "p:\\powershell\\sql\\$Query.sql"
-    invoke-sqlcmd -ServerInstance $MyServer -inputfile $Query -Connectiontimeout 3
+    invoke-sqlcmd -ServerInstance $ServerInstance -inputfile $Query -Connectiontimeout 3 -Database $Database
+}
+elseif ("$File" -ne "No_file_supplied")
+{
+    invoke-sqlcmd -ServerInstance $ServerInstance -inputfile "$GhSql\\$File" -Connectiontimeout 3 -Database $Database
 }
 else
 {
  
-    invoke-sqlcmd -ServerInstance $MyServer -query $Query -Connectiontimeout 3
+    invoke-sqlcmd -ServerInstance $ServerInstance -query $Query -Connectiontimeout 3 -Database $Database
 }
 
 }
@@ -23,7 +29,7 @@ set-alias sql run-sql
 function run-SqlSelect 
 { 
   [CmdletBinding()]
-  Param ( $MyServer, 
+  Param ( $ServerInstance, 
           [String] $QueryFile = "c:\temp\poshsql\select.sql" )
 
   write-debug $QueryFile
@@ -41,7 +47,7 @@ function run-SqlSelect
       $Query = gc $QueryFile
       write-debug "Running $Query"
 
-      foreach ($ServerInstance in $MyServer)
+      foreach ($ServerInstance in $ServerInstance)
       {
         invoke-sqlcmd -ServerInstance $ServerInstance -inputfile $QueryFile -Connectiontimeout 3
       }

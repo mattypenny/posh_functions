@@ -20,10 +20,6 @@ None. You cannot pipe objects to this function
 .EXAMPLE
  
 
-.LINK
-Online list: http://ourwiki/twiki501/bin/view/Main/DBA/PowershellFunctions
-
-
 #>
 [CmdletBinding()]
 Param( [String] $P_Server = ".",

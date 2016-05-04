@@ -41,6 +41,23 @@ Edits file and returns control to Poswershell command line
   }
 
 }
+
+function dirwo 
+<#
+.SYNOPSIS
+Edits file and returns control to Poswershell command line
+#>
+{ [CmdletBinding()]
+  param ($FileNames) 
+
+  . c:\powershell\load_site_specific_variables.ps1
+  
+  dir $DataPatchFolder\* | sort-object -property lastwritetime | select -last 15 -property lastwritetime, fullname
+
+}
+
+
 <#
 vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 #>
+

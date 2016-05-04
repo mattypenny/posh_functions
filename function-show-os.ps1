@@ -1,10 +1,3 @@
-# ----------------------------------------------------------------------
-# Function: sos - show os details. Runs get-wmiobject win32_operatingsystem
-#
-#           Show various os level details
-#           Todo: comment-based help
-#           Todo: input from pipeline
-# ----------------------------------------------------------------------
 
 function get-os 
 { 
@@ -14,7 +7,7 @@ function get-os
 #>
 
   [CmdletBinding()]
-  Param ( $ComputerNameList = ".")
+  Param ( [Parameter(Position=1)]$ComputerNameList = ".")
 
   foreach ($ComputerName in $ComputerNameList)
   {
@@ -28,50 +21,68 @@ function show-os {
 .SYNOPSIS
 Get and format computer os details
 #>
-
   [CmdletBinding()]
-  Param ( $ComputerNameList = ".")
+  Param ( [Parameter(Position=1)]$ComputerNameList = "all")
 
-  get-os $ComputerNameList | 
-    ft @{
-          Label="Server"; 
-          Width = 12 ;
-          Expression={$_.__Server}
-        },
-      @{
-          Name="Versh"; 
-          Width=42; 
-          Expression = { $_.caption.replace('Microsoft Windows','Windows').replace('Microsoft(R) Windows(R)','Windows') } 
-        },
-      @{
-          Label="SPMaj"; 
-          Width = 5;
-          Expression={$_.ServicePackMajorVersion}
-        },
-      @{
-          Label="SPMin"; 
-          Width = 5;
-          Expression={$_.ServicePackMinorVersion}
-        },
-      @{
-          Label="Version";
-          Expression={$_.Version }; 
-          Width = 12
-        },
-      @{
-          Label="Install";
-          Expression={$_.InstallDate.substring(6,2) + "/" + 
-                      $_.InstallDate.substring(4,2) + "/" + 
-                      $_.InstallDate.substring(0,4)};
-          width=10},
-      @{
-          Label="Booted";
-          Expression={ $_.LastBootUpTime.substring(6,2) + "/" + 
-                       $_.LastBootUpTime.substring(4,2) + "/" + 
-                       $_.LastBootUpTime.substring(0,4) + " " +
-                       $_.LastBootUpTime.substring(8,2) + ":" +
-                       $_.LastBootUpTime.substring(10,2)  }; 
-          width=20}
+  if ($ComputerNameList -eq "all")
+  {
+    $ComputerNameList = get-monitoredservers
+    write-verbose "`$ComputerNameList: $ComputerNameList"
+    $OsDetails = foreach ($C in $ComputerNameList)
+    {
+      [string]$ComputerName = $C.ComputerName
+
+      get-os $ComputerName 
+    }
+  }
+  else
+  {
+    $OsDetails = foreach ($ComputerName in $ComputerNameList)
+    {
+      get-os $ComputerName
+    }
+  }
+
+  $OsDetails |
+      ft @{
+            Label="Server"; 
+            Width = 12 ;
+            Expression={$_.__Server}
+          },
+        @{
+            Name="Versh"; 
+            Width=42; 
+            Expression = { $_.caption.replace('Microsoft Windows','Windows').replace('Microsoft(R) Windows(R)','Windows') } 
+          },
+        @{
+            Label="SPMaj"; 
+            Width = 5;
+            Expression={$_.ServicePackMajorVersion}
+          },
+        @{
+            Label="SPMin"; 
+            Width = 5;
+            Expression={$_.ServicePackMinorVersion}
+          },
+        @{
+            Label="Version";
+            Expression={$_.Version }; 
+            Width = 12
+          },
+        @{
+            Label="Install";
+            Expression={$_.InstallDate.substring(6,2) + "/" + 
+                        $_.InstallDate.substring(4,2) + "/" + 
+                        $_.InstallDate.substring(0,4)};
+            width=10},
+        @{
+            Label="Booted";
+            Expression={ $_.LastBootUpTime.substring(6,2) + "/" + 
+                         $_.LastBootUpTime.substring(4,2) + "/" + 
+                         $_.LastBootUpTime.substring(0,4) + " " +
+                         $_.LastBootUpTime.substring(8,2) + ":" +
+                         $_.LastBootUpTime.substring(10,2)  }; 
+            width=20}
 
 }
 set-alias sos show-os
