@@ -126,7 +126,7 @@ function add-TocToHtml {
 
 set-alias atth add-TocToHtml
 
-atth
+
 
 
 <#
