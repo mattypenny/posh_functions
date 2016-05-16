@@ -4,6 +4,7 @@
 #           Repeat for specified number of times, with a specified delay 
 #           between samples. Or just do it once, straightaway
 #
+# This function is autoloaded by .matt.ps1
 # ----------------------------------------------------------------------
 function show-cpu { 
 <#

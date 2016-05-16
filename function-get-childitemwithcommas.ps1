@@ -5,7 +5,9 @@ function get-childitemwithcommas {
 
 .DESCRIPTION
   Longer description
-
+ 
+  This function is autoloaded by .matt.ps1
+   
 .PARAMETER
 
 

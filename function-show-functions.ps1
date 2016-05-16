@@ -5,6 +5,9 @@ function get-functions {
 <#
 .SYNOPSIS
 Show the functions in the repository folder
+.DESCRIPTION
+This function is autoloaded by .matt.ps1
+
 #>
 $SHOW_FUNCTIONS_OBJECT = gci \\$RepositoryServer\d$\dbawork\matt\functions\*.ps1,$GhFunctions\*.ps1
 $SHOW_FUNCTIONS_OBJECT

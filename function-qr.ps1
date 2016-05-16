@@ -10,7 +10,8 @@ function show-quickref {
 Does a grep on quickref files
 
 .DESCRIPTION
-
+ 
+This function is autoloaded by .matt.ps1 
 
 
 .PARAMETER $Pattern

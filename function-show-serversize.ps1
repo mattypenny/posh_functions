@@ -2,6 +2,10 @@ function get-serversize {
 <#
 .SYNOPSIS
 Gets drive sizings
+.DESCRIPTION
+This function is autoloaded by .matt.ps1
+
+
 #>
   [CmdletBinding()]
 

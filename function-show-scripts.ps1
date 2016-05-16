@@ -5,6 +5,8 @@ function get-scripts {
   Show the ps1 scripts in the script folders
 .DESCRIPTION
   Just a convenience for showing the scripts
+  This function is autoloaded by .matt.ps1
+
 
 .PARAMETER Folders
   This would nearly always be left to the default, which would be set in the $profile, or '.matt' initialization script

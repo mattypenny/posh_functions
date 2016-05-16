@@ -4,6 +4,7 @@
     Shows module last update time, removes it if its already loaded then imports it
 .DESCRIPTION
     Shows module last update time, removes it if its already loaded then imports it
+  This function is autoloaded by .matt.ps1
 .PARAMETER ModuleName
     List of Modules to load
 .EXAMPLE

@@ -6,6 +6,7 @@ function get-toplevelfolders {
 .DESCRIPTION
   Handy for looking to see where stuff is installed.
 
+  This function is autoloaded by .matt.ps1
 .PARAMETER
 
 

@@ -6,6 +6,7 @@ function get-topprocesses {
 .DESCRIPTION
   Longer description
 
+  This function is autoloaded by .matt.ps1
 .PARAMETER ComputerName
   
 .PARAMETER NumberOfProcesses

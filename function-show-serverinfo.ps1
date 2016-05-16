@@ -2,6 +2,8 @@
 # Function: ssi - show all static OS info
 #
 #           Show lots of OS stuff
+#
+# This function is autoloaded by .matt.ps1
 # ----------------------------------------------------------------------
 
 function show-serverinfo { 

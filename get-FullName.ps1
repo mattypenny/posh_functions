@@ -4,6 +4,8 @@ function get-fullname {
     Accepts item input from the commandline and outputs lastwritetime and fullname
 .DESCRIPTION
     Just a handy select function 
+    This function is autoloaded by .matt.ps1
+
 .PARAMETER From the pipe line
     
 .EXAMPLE

@@ -2,6 +2,8 @@
 # These functions are too titchy to have their own separate ps1 file
 #
 # Some are glorified aliases
+#
+# This will be autoloaded by .matt.ps1
 # ----------------------------------------------------------------------
 
 function dirod {

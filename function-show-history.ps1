@@ -8,6 +8,8 @@
 .DESCRIPTION
    Gets history - 1000
    searches for specified string
+   This function is autoloaded by .matt.ps1
+
 .EXAMPLE
 .EXAMPLE
    Another example of how to use this cmdlet

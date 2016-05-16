@@ -14,7 +14,7 @@ function get-instanceinformation {
 
 #>
   [CmdletBinding()]
-  Param( [string][Alias ("Instance")]$ComputerName = "Titan"  ) 
+  Param( [string][Alias ("Instance")]$ComputerName = "Ronnie"  ) 
 
   write-debug "$(get-date -format 'hh:mm:ss.ffff') Function beg: $([string]$MyInvocation.Line) "
 
@@ -57,7 +57,7 @@ function get-instanceinformation {
     SMBIOSBIOSVersion = $Bios.SMBIOSBIOSVersion
     TotalAvailableStorage = $TotalAvailableStorage
     Disks = $Disks
-    InstallDate = $OperatingSystem.InstallDate.substring(0,8)s
+    InstallDate = $OperatingSystem.InstallDate.substring(0,8)
     Caption = $OperatingSystem.Caption      # Windows description
     WindowsVersion = $OperatingSystem.Version
     SQLVersion = $ServerLevelSqlInformation.Version

@@ -4,6 +4,9 @@ function get-os
 <#
 .SYNOPSIS
   Get OS details for specified computer
+.DESCRIPTION
+This function is autoloaded by .matt.ps1
+
 #>
 
   [CmdletBinding()]

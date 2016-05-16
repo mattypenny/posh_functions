@@ -13,6 +13,7 @@ Similar to the Unix Cal Command ( Get-Cal.ps1 ). This is a lightly tweaked versi
 
 It gives you a nicely formatted calendar view of the month or year
 
+This will be autoloaded by .matt.ps1
 .PARAMETER Year
 
 .PARAMETER Month

@@ -6,6 +6,8 @@ Displays the eventlog a bit more prettier than get-eventlog does out of the box
 .DESCRIPTION
 
 As above
+This function is autoloaded by .matt.ps1
+
 .PARAMETER P_server
 Specify the remote server. If null tells you about wherever you are 
 running

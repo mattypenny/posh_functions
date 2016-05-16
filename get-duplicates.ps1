@@ -1,4 +1,4 @@
-<pre>
+
 function get-duplicates
 {
   
@@ -74,4 +74,4 @@ function get-duplicates
 
 }
 
-</pre>
+

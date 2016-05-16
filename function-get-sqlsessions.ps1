@@ -5,6 +5,7 @@ function get-sqlsessions {
 
 .DESCRIPTION
   sql sessions
+  This function is autoloaded by .matt.ps1
 
 .PARAMETER $ServerInstance
   Can be a single server or a list of server

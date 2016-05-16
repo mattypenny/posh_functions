@@ -12,6 +12,8 @@ Sets the prompt either:
 Todo: show the time
 Todo: show the time of the last command
 
+This function is autoloaded by .matt.ps1
+
 .PARAMETER Folder
 Not yet implemented. Show the folder name in the prompt
 

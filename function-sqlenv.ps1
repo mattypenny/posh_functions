@@ -4,6 +4,9 @@
 .DESCRIPTION
    This function sets $ServerInstance and $ComputerName. It's an equivalent of .oraenv
 
+   This function is autoloaded by .matt.ps1
+
+
    Todo: Could append \default if appropriate
 
 .EXAMPLE

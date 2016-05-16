@@ -10,6 +10,8 @@ Sets de bugger on or off
 
 .DESCRIPTION
 Changes debug mode between off (silentlycontinue) and on (continue). If no mode specified defaults to off
+  
+This function is autoloaded by .matt.ps1
 
 .PARAMETER P_DEBUG_MODE
 On or off

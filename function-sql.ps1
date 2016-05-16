@@ -1,5 +1,6 @@
 # ----------------------------------------------------------------------
 # Function: sql - Run a query against a specified database
+# This function is autoloaded by .matt.ps1
 # ----------------------------------------------------------------------
 
 function run-sql { Param ( [String] $ServerInstance, [String] $Query ,

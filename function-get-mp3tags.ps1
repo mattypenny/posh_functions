@@ -170,6 +170,6 @@ function Get-Mp3Poperties
 
  
 
-$X = Get-ExtendedFileProperties -folder "D:\music\Desm*" -verbose
-$X | select Size, Album
+# $X = Get-ExtendedFileProperties -folder "D:\music\Desm*" -verbose
+# $X | select Size, Album
 # vim: set softtabstop=2 shiftwidth=2 expandtab

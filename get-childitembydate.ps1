@@ -3,6 +3,9 @@
    Short description
 .DESCRIPTION
    Long description
+   This function is autoloaded by .matt.ps1
+
+
 .EXAMPLE
    Example of how to use this cmdlet
 .EXAMPLE

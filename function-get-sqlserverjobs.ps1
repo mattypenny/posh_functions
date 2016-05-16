@@ -9,6 +9,8 @@ Uses the sqlserver PSDrive to show sql agent jobs
 To do:
 - a switch to not do the refresh
 - a switch to report all sqlservers in a list
+  
+This function is autoloaded by .matt.ps1
 
 .PARAMETER ServerInstance
 Specify the sqlserver
