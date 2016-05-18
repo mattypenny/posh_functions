@@ -29,6 +29,7 @@ function get-fullname {
 }
 
 set-alias gfn get-fullname
+set-alias sfn get-fullname
 
 
 
