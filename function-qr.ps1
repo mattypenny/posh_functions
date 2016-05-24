@@ -1,25 +1,15 @@
 $QuickReferenceFolder = "c:\users\$($($Env:Username).trimend('2'))\Documents\QuickReference\"
-# ----------------------------------------------------------------------
-# Function: show-quickref
-#
-#           This function
-# ----------------------------------------------------------------------
-function show-quickref { 
+
+function get-LineFromQuickReferenceFiles { 
 <#
 .SYNOPSIS
 Does a grep on quickref files
-
 .DESCRIPTION
- 
 This function is autoloaded by .matt.ps1 
-
-
 .PARAMETER $Pattern
 What to grep for. e.g. databases
-
 .INPUTS
 None. You cannot pipe objects to this function
-
 .EXAMPLE
 qr jobs
 
@@ -32,11 +22,12 @@ dir Sqlserver:\sql\$Computername\default\Jobserver\Jobs | ft @{Label ="Jobbie" ;
 
 #>
   [CmdletBinding()]	
-	Param( [String] $Pattern)
+	Param( [String] $Pattern,
+         [String] $FilePattern)
 
   if ($Pattern -ne $null)
   {
-    select-string -Pattern $Pattern -path $QuickReferenceFolder\*.md | select line | ft -wrap
+    select-string -Pattern $Pattern -path $QuickReferenceFolder\*$FilePattern*.md 
   }
   else
   {
@@ -45,7 +36,40 @@ dir Sqlserver:\sql\$Computername\default\Jobserver\Jobs | ft @{Label ="Jobbie" ;
 
 
 }
+
+function show-quickref { 
+<#
+.SYNOPSIS
+Does a grep on quickref files
+.DESCRIPTION
+This function is autoloaded by .matt.ps1 
+.PARAMETER $Pattern
+What to grep for. e.g. insert
+.PARAMETER $FilePattern
+File to grep in. e.g. power
+.EXAMPLE
+qr jobs
+
+Line
+----
+$JOB = dir Sqlserver:\sql\$Computername\default\Jobserver\jobs | where-object {$_.name -like '*big-job*'}
+dir Sqlserver:\sql\$Computername\default\Jobserver\Jobs | select name, lastrundate, nextrundate, currentrunstatus, lastrunoutcome | ft
+dir Sqlserver:\sql\$Computername\default\Jobserver\Jobs | ft @{Label ="Jobbie" ; Expression={$_.name} ; Width = 42 }, @{Label="Last run" ;
+
+
+#>
+  [CmdletBinding()]	
+
+	Param([Parameter(Mandatory=$False,Position=1)] [String] $Pattern,
+        [Parameter(Mandatory=$False,Position=2)] [String] $FilePattern)
+
+get-LineFromQuickReferenceFiles -pattern $Pattern -filepattern $FilePattern | select line | ft -wrap
+
+}
 set-alias qr show-quickref
+
+
+
 
 function set-LocationToQuickReference {
   cd $QuickReferenceFolder
