@@ -61,7 +61,7 @@ dir Sqlserver:\sql\$Computername\default\Jobserver\Jobs | ft @{Label ="Jobbie" ;
   [CmdletBinding()]	
 
 	Param([Parameter(Mandatory=$False,Position=1)] [String] $Pattern,
-        [Parameter(Mandatory=$False,Position=2)] [String] $FilePattern)
+        [Parameter(Mandatory=$False,Position=2)][Alias ("f","file")] [String] $FilePattern)
 
 get-LineFromQuickReferenceFiles -pattern $Pattern -filepattern $FilePattern | select line | ft -wrap
 
@@ -81,7 +81,18 @@ function edit-quickref
 Edit the quick reference document
 #>
 { 
-  gvim "$QuickReferenceFolder\\unsorted.md" 
+  [CmdletBinding()]	
+
+	Param( [Parameter(Mandatory=$False,Position=2)][Alias ("f","file")] [String] $FilePattern)
+
+  if ($FilePattern)
+  {
+    gvim "$QuickReferenceFolder\\*$FilePattern*.md" 
+  }
+  else
+  {
+    gvim "$QuickReferenceFolder\\unsorted.md" 
+  }
 }
 set-alias gqr edit-quickref
 set-alias eqr edit-quickref
