@@ -57,5 +57,7 @@ function edit-ContentFromLastFile {
 
 }
 
-set-alias ecflf edit-ContentFromLastFile
+
+
+
 

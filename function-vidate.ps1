@@ -2,6 +2,7 @@
 # Function: vidate - edit-filewithbackup
 #
 #           This function copies the existing file to old\<filename>_<date>
+#           This function is autoloaded
 # ----------------------------------------------------------------------
 function edit-filewithbackup { 
 <#
