@@ -5,6 +5,7 @@ function get-loggedonuser {
 
 .DESCRIPTION
   Gets users logged on to a PC or server
+  This function is autoloaded by .matt.ps1
 
 .PARAMETER $ComputerName
   Can be a single PC or a list of PCs

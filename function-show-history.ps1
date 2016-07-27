@@ -1,5 +1,6 @@
 # ------------------------------
 # show-history
+# These functions are autoloaded
 # ------------------------------
 
 <#

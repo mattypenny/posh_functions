@@ -23,6 +23,9 @@ function show-os {
 <#
 .SYNOPSIS
 Get and format computer os details
+.PARAMETER ComputerNameList
+Either the server you're interested in or 'all' for a list of all of them
+
 #>
   [CmdletBinding()]
   Param ( [Parameter(Position=1)]$ComputerNameList = "all")
