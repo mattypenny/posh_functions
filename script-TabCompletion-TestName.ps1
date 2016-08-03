@@ -2,17 +2,30 @@
 
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
 
-    $searcher = select-string "^Describe `"*`"*`{*" *.Tests.ps1
+    $DescribeLines = select-string "^Describe `"*`"*`{*" *.Tests.ps1 | sort-object -Property Line
 
-    $searcher | ForEach-Object {
+    $PesterTests = foreach ($Line in $DescribeLines) 
+    {
+        $TestDescription = $Line.line -replace 'Describe',''  -replace '{','' -replace '"', ''
 
-        New-Object -TypeName pscustomobject -Property @{ 
-            TestName = $_.line -replace 'Describe',''  -replace '{','' 
+        $TestDescription = $TestDescription.trim()
+
+        
+        if ($TestDescription -match ' ')
+        {
+            # $TestDescription = "'" + $TestDescription + "'"
+            $TestDescription = "'$TestDescription'"
         }
+        
+        
+        New-Object -TypeName pscustomobject -Property @{TestName = $TestDescription}
 
-    } | Sort-Object TestName | ForEach-Object {
+    } 
+    
+    ForEach ($Test in $PesterTests)
+    {
 
-        New-Object System.Management.Automation.CompletionResult $_.TestName
+        New-Object System.Management.Automation.CompletionResult $Test.TestName
 
     }
 
@@ -20,11 +33,8 @@
 
  
 
- 
 
 if (-not $global:options) { $global:options = @{CustomArgumentCompleters = @{};NativeArgumentCompleters = @{}}}
-
- 
 
 $global:options['CustomArgumentCompleters']['TestName'] = $Completion_TestName
 
