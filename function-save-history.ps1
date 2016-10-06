@@ -10,7 +10,18 @@ function save-history {
   
 #>
     
-  history -count 1000 | select EndExecutionTime, ExecutionStatus, CommandLine | fl | out-string -width 512  >> \\$RepositoryServer\d$\dbawork\matt\history\history.txt
+  $folder = "c:\powershell\history\"
+  foreach ($H in $(get-history -count 10000))
+  {
+     [datetime]$StartExecutionTime = $H.StartExecutionTime; 
+
+     $FileName = $StartExecutionTime.ToString("yyyyMMdd")
+
+     $FileName = "$FileName.txt"
+
+     $H | select EndExecutionTime, ExecutionStatus, CommandLine | fl  >> $folder\$Filename
+
+  }
+
 }
 set-alias shh save-history
-
