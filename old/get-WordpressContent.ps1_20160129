@@ -1,0 +1,48 @@
+﻿<#
+select-xml -xml $wp_xml -xpath "//channel/item" | 
+  select -expandproperty node | 
+  where post_type -ne "attachment" |
+  where title -like "*January*" | 
+  select -ExpandProperty encoded | fl
+#>
+
+# [xml]$wp_xml = get-content wp_exp.xml
+$Title = "Ramone"
+$Nodes = select-xml -xml $wp_xml -xpath "//channel/item" | select -expandproperty node | where-object title -like "*$Title*"
+
+foreach ($Node in $Nodes)
+{
+  $attachmenturl  = $Node.attachment_url
+  $commentstatus  = $Node.comment_status
+  $creator        = $Node.creator       
+  $description    = $Node.description   
+  $encoded        = $Node.encoded       
+  $guid           = $Node.guid          
+  $issticky       = $Node.is_sticky     
+  $link           = $Node.link          
+  $menuorder      = $Node.menu_order    
+  $pingstatus     = $Node.ping_status   
+  $postmeta       = $Node.postmeta      
+  $postdate       = $Node.post_date     
+  $postdategmt    = $Node.post_date_gmt 
+  $postid         = $Node.post_id       
+  $postname       = $Node.post_name     
+  $postparent     = $Node.post_parent   
+  $postpassword   = $Node.post_password 
+  $posttype       = $Node.post_type     
+  $pubDate        = $Node.pubDate       
+  $status         = $Node.status        
+  $title          = $Node.title   
+
+  <# I Need to work out how much of the above stuff I can retain and how much of it I can put in the front matter. 
+  It would be great to be able to keep it 'for a rainy day'
+
+  The other big-ish puzzle is whether there's any chance of maintaining the same URLs for all the content.
+
+  Or, alternatively, creating re-directs for everything. I'm not sure given that I haven't got _loads_ of backlinks that that's 
+  worth worrying about tbh. Although quite a lot from twitter etc
+  #>
+  
+  $node
+
+}

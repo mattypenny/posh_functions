@@ -13,8 +13,6 @@
     [CmdletBinding()]
     Param( [string][Alias ("module")]$ListOfModules = "Bounce-PCs"  ) 
 
-    Import-Module Logging
-    Import-Module MtpLogging
 
     write-startfunction
 
@@ -32,7 +30,7 @@
             [string]$LastWriteTime = $FileDetails.LastWriteTime
             [string]$Fullname = $FileDetails.Fullname
 
-            write-hostlog "Loading $ModuleObject $LastWriteTime  $Fullname"
+            write-host "Loading $ModuleObject $LastWriteTime  $Fullname"
 
             remove-module $ModuleObject
 

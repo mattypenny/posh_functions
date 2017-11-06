@@ -15,7 +15,7 @@
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Get-GitAddCommand
+function Get-MTPGitAddCommand
 {
     [CmdletBinding()]
     [Alias()]
@@ -25,24 +25,121 @@ function Get-GitAddCommand
         [Parameter(Position=0)]
         $FolderName = ".",
 
-        [string]$Option = 0
+        [string]$Option = "All"
     )
 
-    
-    Process
-    {
-        # Todo -  convert to building a string then write-outputting it
-        # write-host -nonewline "git add" ; foreach ($F in $(get-gitstatus | select -expand working)) {write-host -nonewline " $F"}; write-host
-    
-        $GitAddString = "git add"
-        foreach ($F in $(get-gitstatus | select -expand working)) 
-        {
-          $GitAddString = $GitAddString + " $F"
-        }
-        $GitAddString
-        
-    }
+   $GitStatusOutput = get-MTPGetGitStatus 
+ 
+   get-MTPGitUntrackedFilesCommands -GitStatusOutput $GitStatusOutput
+   get-MTPGitModifiedFilesCommands -GitStatusOutput $GitStatusOutput
     
 }
+function get-MTPGitModifiedFilesCommands
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Position=0)]
+        $GitStatusOutput
+	)
+    
+    $ModifiedFiles = get-MTPGitModifiedFiles -GitStatusOutput $GitStatusOutput
+	foreach ($F in $ModifiedFiles)
+	{
+		[string]$File = $F.Line
+		$File = $File.trim()
+		write-output "git add `"$File`""
+	}
+
+}
+
+
+function get-MTPGitUntrackedFilesCommands
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Position=0)]
+        $GitStatusOutput
+	)
+    
+    $UntrackedFiles = get-MTPGitUntrackedFiles -GitStatusOutput $GitStatusOutput
+	foreach ($F in $UntrackedFiles)
+	{
+		[string]$File = $F.Line
+		$File = $File.trim()
+		write-output "git add `"$File`""
+	}
+
+}
+
+function get-MTPGitStatus
+{
+    [CmdletBinding()]
+
+    $GitStatusOutput = git status | select-string '^'
+
+    $GitStatusOutput = $GitStatusOutput |
+							where-object Line -notlike "*~" |
+                            where-object Line -notlike "*swp*" | 				
+                            where-object Line -notlike "*swo" | 				
+							where-object Line -notlike '(use "git add <file>..." to include in what will be committed)*'
+
+	$GitStatusOutput
+}
+
+function get-MTPGitUntrackedFiles
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Position=0)]
+        $GitStatusOutput,
+
+        [string]$UntrackedFilesString = "Untracked files:"
+    )
+    $UntrackedFilesLine = $GitStatusOutput | ? line -Like "$UntrackedFilesString*" 
+
+    [int]$UntrackedFilesLineNumber = $UntrackedFilesLine.LineNumber
+
+    $Untracked = $GitStatusOutput | ? linenumber -gt $UntrackedFilesLineNumber
+
+
+	$Untracked
+}
+
+function get-MTPGitModifiedFiles
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Position=0)]
+        $GitStatusOutput,
+
+        [string]$UntrackedFilesString = "Untracked files:"
+    )
+    $UntrackedFilesLine = $GitStatusOutput | ? line -Like "$UntrackedFilesString*" 
+
+    [int]$UntrackedFilesLineNumber = $UntrackedFilesLine.LineNumber
+
+    $Modified = $GitStatusOutput | 
+    				? linenumber -lt $UntrackedFilesLineNumber |
+    				? line -like "*modified:*" 
+
+	
+
+	$ModifiedFiles = @()	
+
+	foreach ($F in $Modified)
+	{
+		[string]$Line = $F.Line
+		write-host "$Line"
+    
+	    $ModifiedFiles += [PSCustomObject]@{Line = $Line.split(':')[1] }
+    }
+
+	$ModifiedFiles
+}
+
 
 set-alias ggac get-gitaddcommand
